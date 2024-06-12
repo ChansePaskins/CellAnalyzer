@@ -87,7 +87,7 @@ if uploaded_file is not None:
         cv2.circle(original_with_circles, (300, 100), int(np.sqrt(connected_cell_area / np.pi)), (255, 0, 0),
                    2)  # Red circle for connected cell area
         st.image(original_with_circles, use_column_width=True)
-        'Original Image with :green[selected minimum area], :blue[average area], and :red[threshold] for max cell size displayed for reference'
+        'Original Image with :green[selected minimum area], :blue[average area], and :red[threshold for max cell size] displayed for reference'
 
     with cls[1]:
         st.image(normalized, caption='Normalized Image', use_column_width=True)
