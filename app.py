@@ -81,11 +81,11 @@ if uploaded_file is not None:
 
         # Draw circles representing the areas
         cv2.circle(original_with_circles, (100, 100), int(np.sqrt(minimum_area / np.pi)), (0, 255, 0),
-                   2)  # Green circle for minimum area
+                   1)  # Green circle for minimum area
         cv2.circle(original_with_circles, (200, 100), int(np.sqrt(average_cell_area / np.pi)), (0, 0, 255),
-                   2)  # Blue circle for average cell area
+                   1)  # Blue circle for average cell area
         cv2.circle(original_with_circles, (300, 100), int(np.sqrt(connected_cell_area / np.pi)), (255, 0, 0),
-                   2)  # Red circle for connected cell area
+                   1)  # Red circle for connected cell area
         st.image(original_with_circles, use_column_width=True)
         'Original Image with :green[selected minimum area], :blue[average area], and :red[threshold for max cell size] displayed for reference'
 

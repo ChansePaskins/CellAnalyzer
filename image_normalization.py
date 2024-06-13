@@ -121,3 +121,16 @@ def apply_canny_filter(image):
     dilated_edges = cv2.dilate(edges, kernel, iterations=1)
 
     return dilated_edges
+
+def apply_canny_filter_area(image):
+    # Apply Gaussian blur to reduce noise and improve edge detection
+    blurred_image = cv2.GaussianBlur(image, (5, 5), 1.4)
+
+    # Apply Canny edge detection
+    edges = cv2.Canny(blurred_image, 0, 100)
+
+    # Apply dilation to close gaps in edges
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+    dilated_edges = cv2.dilate(edges, kernel, iterations=1)
+
+    return dilated_edges
