@@ -93,33 +93,23 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
     close = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel, iterations=2)
 
     # Find contours
-    contours, hierarchy = cv2.findContours(close, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    cnts, _ = cv2.findContours(close, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     cells = 0
     cell_areas = []
 
     # Process contours
-    for i, c in enumerate(contours):
-        # Check if contour has no parent (external contour)
-        if hierarchy[0][i][3] == -1:
-            # Compute the area of the contour
-            area = cv2.contourArea(c)
-
-            if area > minimum_area:
-                # Draw contour in green
-                cv2.drawContours(original, [c], -1, (0, 255, 0), 2)
-    
-                if area > connected_cell_area:
-                    cells += math.ceil(area / average_cell_area)
-                    for i in range(cells):
-                        cell_areas.append(average_cell_area)
-                    # Exclude area covered by daughter contours
-                    for j, child_index in enumerate(hierarchy[0]):
-                        if child_index[3] == i:  # Check if the child contour belongs to the current external contour
-                            area -= cv2.contourArea(contours[j])  # Subtract the area of the child contour
-        else:
-            # Draw contour in red if it has a parent (daughter contour)
-            cv2.drawContours(original, [c], -1, (0, 0, 255), 2)
+    for c in cnts:
+        area = cv2.contourArea(c)
+        if area > minimum_area or area < 0:
+            cv2.drawContours(original, [c], -1, (36, 255, 12), 2)
+            if area > connected_cell_area:
+                cells += math.ceil(area / average_cell_area)
+                for i in range(cells):
+                    cell_areas.append(average_cell_area)
+            else:
+                cells += 1 if area > 0 else None
+                cell_areas.append(area)
 
     converted_area_total = int(sum(cell_areas) / scaling**2)
     converted_area_mean = round(np.mean(cell_areas) / scaling**2, 2) if cell_areas else 0
