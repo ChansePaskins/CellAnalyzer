@@ -101,19 +101,21 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
     # Process contours
     for i, c in enumerate(contours):
         # Check if contour has no parent (external contour)
-        if hierarchy[0][i][3] == -1:
+        if hierarchy[0][i][3] == -1 and area > minimum_area:
             # Compute the area of the contour
             area = cv2.contourArea(c)
 
             # Draw contour in green
             cv2.drawContours(original, [c], -1, (0, 255, 0), 2)
 
-            # Process area conditions
-            if area > minimum_area or area < 0:
-                if area > connected_cell_area:
-                    cells += math.ceil(area / average_cell_area)
-                    for i in range(cells):
-                        cell_areas.append(average_cell_area)
+            if area > connected_cell_area:
+                cells += math.ceil(area / average_cell_area)
+                for i in range(cells):
+                    cell_areas.append(average_cell_area)
+                # Exclude area covered by daughter contours
+                for j, child_index in enumerate(hierarchy[0]):
+                    if child_index[3] == i:  # Check if the child contour belongs to the current external contour
+                        area -= cv2.contourArea(contours[j])  # Subtract the area of the child contour
         else:
             # Draw contour in red if it has a parent (daughter contour)
             cv2.drawContours(original, [c], -1, (0, 0, 255), 2)
