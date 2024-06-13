@@ -83,7 +83,7 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
     elif shadow_toggle == 'Canny':
         normalized = cv2.bitwise_not(apply_canny_filter(original))
     elif shadow_toggle == 'Canny Channel':
-        normalized = apply_canny_filter_area(original)
+        normalized = cv2.bitwise_not(apply_canny_filter_area(original))
 
     mask = cv2.inRange(normalized, lower_intensity, upper_intensity)
 
