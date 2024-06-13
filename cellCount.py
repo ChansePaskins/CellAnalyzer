@@ -97,21 +97,20 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
 
     cells = 0
     cell_areas = []
-    tester = 0
 
     # Process contours
     for c in cnts:
         area = cv2.contourArea(c)
-        if area > minimum_area:
+        if area > minimum_area or area < 0:
             cv2.drawContours(original, [c], -1, (36, 255, 12), 2)
             if area > connected_cell_area:
                 cells += math.ceil(area / average_cell_area)
                 for i in range(cells):
                     cell_areas.append(average_cell_area)
             else:
-                cells += 1
+                cells += 1 if area > 0 else None
                 cell_areas.append(area)
-                tester += 1
+
 
 
     converted_area_total = int(sum(cell_areas) / scaling**2)

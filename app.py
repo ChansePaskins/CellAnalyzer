@@ -26,10 +26,10 @@ with st.container():
     # Sliders for parameter selection
     columns = st.columns(2)
     with columns[0]:
-        minimum_area = st.slider("Minimum Area to Be Consider Cell", min_value=0, max_value=1000, value=minimum_area, step=10)
-        average_cell_area = st.slider("Average Size of Single Cell", min_value=0, max_value=800, value=average_cell_area, step=10)
+        minimum_area = st.slider("Minimum Area to Be Consider Cell", min_value=1, max_value=2000, value=minimum_area, step=10)
+        average_cell_area = st.slider("Average Size of Single Cell", min_value=1, max_value=4000, value=average_cell_area, step=10)
         connected_cell_area = st.slider(
-            "Max Size of Cell (for cases where cells are stuck together)", min_value=0, max_value=2000, value=connected_cell_area, step=10)
+            "Max Size of Cell (for cases where cells are stuck together)", min_value=1, max_value=5000, value=connected_cell_area, step=20)
     with columns[1]:
         lower_intensity, upper_intensity = st.select_slider("Intensity Thresholds", options=list(range(101)), value=(lower_intensity, upper_intensity))
         image_method = st.selectbox("Processing Method (I recommend using Sobel)",
