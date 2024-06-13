@@ -93,23 +93,33 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
     close = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel, iterations=2)
 
     # Find contours
-    cnts, _ = cv2.findContours(close, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours, hierarchy = cv2.findContours(close, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     cells = 0
     cell_areas = []
 
     # Process contours
-    for c in cnts:
-        area = cv2.contourArea(c)
-        if area > minimum_area or area < 0:
-            cv2.drawContours(original, [c], -1, (36, 255, 12), 2)
-            if area > connected_cell_area:
-                cells += math.ceil(area / average_cell_area)
-                for i in range(cells):
-                    cell_areas.append(average_cell_area)
-            else:
-                cells += 1 if area > 0 else None
-                cell_areas.append(area)
+    for i, c in enumerate(contours):
+        # Check if contour has no parent (external contour)
+        if hierarchy[0][i][3] == -1:
+            # Compute the area of the contour
+            area = cv2.contourArea(c)
+
+            # Draw contour in green
+            cv2.drawContours(original, [c], -1, (0, 255, 0), 2)
+
+            # Process area conditions
+            if area > minimum_area or area < 0:
+                if area > connected_cell_area:
+                    cells += math.ceil(area / average_cell_area)
+                    for i in range(cells):
+                        cell_areas.append(average_cell_area)
+                else:
+                    cells += 1 if area > 0 else None
+                    cell_areas.append(area)
+        else:
+            # Draw contour in red if it has a parent (daughter contour)
+            cv2.drawContours(original, [c], -1, (0, 0, 255), 2)
 
     converted_area_total = int(sum(cell_areas) / scaling**2)
     converted_area_mean = round(np.mean(cell_areas) / scaling**2, 2) if cell_areas else 0
