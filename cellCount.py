@@ -111,17 +111,8 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
                 cells += 1 if area > 0 else None
                 cell_areas.append(area)
 
-
-
     converted_area_total = int(sum(cell_areas) / scaling**2)
     converted_area_mean = round(np.mean(cell_areas) / scaling**2, 2) if cell_areas else 0
-
-    print(round(np.mean(cell_areas) if cell_areas else 0))
-    print(tester)
-
-    print(f"Cells: {cells}")
-    print(f"Total Area: {converted_area_total/10e-8} cm\u00b2")
-    print(f"Average Area: {converted_area_mean} µm\u00b2")
 
     return normalized, original, cells, converted_area_total, converted_area_mean
 
