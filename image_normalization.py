@@ -117,7 +117,7 @@ def apply_canny_filter(image):
     edges = cv2.Canny(blurred_image, 0, 30)
 
     # Apply dilation to close gaps in edges
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 1))
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
     dilated_edges = cv2.dilate(edges, kernel, iterations=2)
 
     return dilated_edges
