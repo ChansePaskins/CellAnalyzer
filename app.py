@@ -33,7 +33,7 @@ with st.container():
     with columns[1]:
         lower_intensity, upper_intensity = st.select_slider("Intensity Thresholds", options=list(range(101)), value=(lower_intensity, upper_intensity))
         image_method = st.selectbox("Processing Method (I recommend using Sobel)",
-                                    ("Sobel", "Block Segmentation", "Histogram"))
+                                    ("Sobel", "Canny", "Block Segmentation", "Histogram"))
         scaling = st.number_input("Scaling Between Pixels and Centimeters", value=3.75)
 
     if image_method == "Block Segmentation":

@@ -80,6 +80,8 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
         normalized = histogram_equalization(original)
     elif shadow_toggle == "Sobel":
         normalized = cv2.bitwise_not(apply_sobel_filter(original))
+    elif shadow_toggle == 'Canny':
+        normalized = apply_sobel_filter(original)
     else:
         # if you want to skip histogram eq (least recommended)
         normalized = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)

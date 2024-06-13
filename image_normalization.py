@@ -107,3 +107,14 @@ def apply_sobel_filter(image):
     equalized = cv2.equalizeHist(gray_magnitude)
 
     return equalized
+
+
+def apply_canny_filter(image, low_threshold, high_threshold):
+
+    # Apply Gaussian blur to reduce noise and improve edge detection
+    blurred_image = cv2.GaussianBlur(image, (5, 5), 1.4)
+
+    # Apply Canny edge detection
+    edges = cv2.Canny(blurred_image, low_threshold, high_threshold)
+
+    return edges
