@@ -114,9 +114,6 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
                     cells += math.ceil(area / average_cell_area)
                     for i in range(cells):
                         cell_areas.append(average_cell_area)
-                else:
-                    cells += 1 if area > 0 else None
-                    cell_areas.append(area)
         else:
             # Draw contour in red if it has a parent (daughter contour)
             cv2.drawContours(original, [c], -1, (0, 0, 255), 2)
