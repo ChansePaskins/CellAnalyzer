@@ -94,7 +94,7 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
     close = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel, iterations=2)
 
     # Find contours
-    cnts, _ = cv2.findContours(close, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts, _ = cv2.findContours(normalized, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     cells = 0
     cell_areas = []
