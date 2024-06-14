@@ -36,11 +36,14 @@ with clms[0]:
     st.write("Upload an image and select parameters")
 with clms[1]:
     if st.button("Show example"):
-        uploaded_file = cv2.imread("example.tif")
+        example_image = cv2.imread("example.tif")
+        st.session_state['uploaded_image'] = example_image
+
 # Create a form for user input
 with st.container():
     # File uploader for image upload
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png", "bmp", "tif"])
+    st.session_state['uploaded_image'] = uploaded_file
 
     # Sliders for parameter selection
     columns = st.columns(2)
@@ -84,7 +87,7 @@ with st.container():
                 close_iter = st.slider("Closing Iterations",min_value=1, max_value=10, value=1)
 
 
-if uploaded_file is not None:
+if 'uploaded_image' in st.session_state:
     # Read the image
     # Read the uploaded file as a byte array
     file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
