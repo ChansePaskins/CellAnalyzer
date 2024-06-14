@@ -91,6 +91,7 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
     opening = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=1)
     close = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel, iterations=2)
+    morphed = close.copy()
 
     # Find contours with hierarchy
     cnts, hierarchy = cv2.findContours(close, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
