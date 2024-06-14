@@ -36,7 +36,7 @@ with st.container():
                                     ("Sobel", "Canny", "Canny Channel", "Block Segmentation", "Histogram"))
         scaling = st.number_input("Scaling Between Pixels and Centimeters", value=3.75)
 
-        morph_checkbox = st.checkbox("Apply Morphological Transformations?")
+        morph_checkbox = st.checkbox("Apply Morphological Transformations?", value=True)
 
     if image_method == "Block Segmentation":
         block_size = st.slider("Block Size", min_value=50, max_value=200, value=block_size, step=10)
