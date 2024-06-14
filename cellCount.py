@@ -89,7 +89,7 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
 
     # Morphological operations
     if morph_filter:
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (1, 1))
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
         opening = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=1)
         close = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel, iterations=1)
         morphed = close.copy()
