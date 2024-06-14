@@ -27,7 +27,7 @@ def cell_detection(original, lower_intensity, upper_intensity, shadow_toggle,
     mask = cv2.inRange(normalized, lower_intensity, upper_intensity)
 
     if morph_filter:
-        morphed = morpholological_effects(image, opening, closing, iter1, iter2, kernel_size)
+        morphed = morphological_effects(image, opening, closing, iter1, iter2, kernel_size)
     else:
         morphed = mask
 
