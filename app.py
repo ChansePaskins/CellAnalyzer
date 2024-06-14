@@ -29,7 +29,7 @@ erode_iter = 1
 dilate_iter = 1
 
 st.title("Cell Counter and Area Analyzer")
-clmns = st.columns(2)
+clms = st.columns(2)
 
 
 with clms[0]:
