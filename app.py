@@ -35,10 +35,8 @@ clms = st.columns(2)
 with clms[0]:
     st.write("Upload an image and select parameters")
 with clms[1]:
-    example = st.button("Show example")
-
-if example:
-    uploaded_file = cv2.imread("example.tif")
+    if st.button("Show example"):
+        uploaded_file = cv2.imread("example.tif")
 # Create a form for user input
 with st.container():
     # File uploader for image upload
