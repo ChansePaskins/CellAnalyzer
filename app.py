@@ -18,6 +18,13 @@ upper_intensity = 60
 block_size = 100
 scaling = 3.75
 morph_checkbox = True
+kernel_size = 3
+opening = True
+closing = True
+open_iter = 1
+close_iter = 1
+
+
 # Create a form for user input
 with st.container():
     # File uploader for image upload
@@ -40,6 +47,15 @@ with st.container():
 
     if image_method == "Block Segmentation":
         block_size = st.slider("Block Size", min_value=50, max_value=200, value=block_size, step=10)
+
+    if morph_checkbox:
+        kernel_size = st.number_input("Kernel Size (must be odd number)")
+        opening = st.checkbox("Perform Opening?")
+        closing = st.checkbox("Perform Closing?")
+        if opening:
+            open_iter = st.number_input("Opening Iterations")
+        if closing:
+            close_iter = st.number_input("Closing Iterations")
 
 
 if uploaded_file is not None:
