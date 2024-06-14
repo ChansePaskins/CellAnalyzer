@@ -23,14 +23,14 @@ def cell_detection(image, lower_intensity, upper_intensity, shadow_toggle,
     elif shadow_toggle == 'Canny Channel':
         normalized = cv2.bitwise_not(apply_canny_filter_area(original))
     else:
-        normalized = original
+        normalized = original.copy()
 
-    mask = cv2.inRange(normalized, lower_intensity, upper_intensity)
+    mask = cv2.inRange(normalized.copy(), lower_intensity, upper_intensity)
 
     if morph_filter:
-        morphed = morphological_effects(mask, opening, closing, iter1, iter2, kernel_size)
+        morphed = morphological_effects(mask.copy(), opening, closing, iter1, iter2, kernel_size)
     else:
-        morphed = mask
+        morphed = mask.copy()
 
     # Find contours with hierarchy
     cnts, hierarchy = cv2.findContours(morphed, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)

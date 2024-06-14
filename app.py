@@ -129,4 +129,3 @@ if uploaded_file is not None:
     with st.container():
         st.write("Slide to compare")
         image_comparison(image, overlay)
-        
