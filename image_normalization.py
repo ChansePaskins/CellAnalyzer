@@ -2,17 +2,30 @@ import numpy as np
 import cv2
 
 
-def morphological_effects(image, opening, closing, iter1, iter2, kernel_size):
+def morphological_effects(image, opening, closing, erosion, dilation, iter1, iter2, iter3, iter4, kernel_size):
 
     # Morphological operations
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
 
-    if opening:
-        image = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel, iterations=iter1)
-    if closing:
-        image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel, iterations=iter2)
+    result = image.copy()
 
-    return image
+    # Apply erosion
+    if erosion:
+        result = cv2.erode(result, kernel, iterations=iter3)
+
+    # Apply dilation
+    if dilation:
+        result = cv2.dilate(result, kernel, iterations=iter4)
+
+    # Apply opening
+    if opening:
+        result = cv2.morphologyEx(result, cv2.MORPH_OPEN, kernel, iterations=iter1)
+
+    # Apply closing
+    if closing:
+        result = cv2.morphologyEx(result, cv2.MORPH_CLOSE, kernel, iterations=iter2)
+
+    return result
 
 def apply_sobel_filter(image):
     # Apply Sobel filter in the x direction

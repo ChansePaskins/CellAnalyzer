@@ -7,7 +7,7 @@ from image_normalization import *
 def cell_detection(image, lower_intensity, upper_intensity, shadow_toggle,
                    block_size, morph_filter, minimum_area, average_cell_area,
                    connected_cell_area, scaling, kernel_size, opening, closing,
-                   iter1, iter2):
+                   erosion, dilation, iter1, iter2, iter3, iter4):
 
     original = image.copy()
     if shadow_toggle == "Block Segmentation":
@@ -28,7 +28,9 @@ def cell_detection(image, lower_intensity, upper_intensity, shadow_toggle,
     mask = cv2.inRange(normalized.copy(), lower_intensity, upper_intensity)
 
     if morph_filter:
-        morphed = morphological_effects(mask.copy(), opening, closing, iter1, iter2, kernel_size)
+        morphed = morphological_effects(
+            mask.copy(), opening, closing, erosion, dilation, iter1, iter2, iter3, iter4, kernel_size
+        )
     else:
         morphed = mask.copy()
 

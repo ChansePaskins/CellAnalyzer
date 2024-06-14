@@ -53,15 +53,23 @@ with st.container():
 
         if morph_checkbox:
             kernel_size = st.slider("Kernel Size (must be odd number)", min_value=1, max_value=11, value=3, step=2)
-            cl = st.columns(2)
+            cl = st.columns(4)
             with cl[0]:
                 opening = st.checkbox("Perform Opening?", value=True)
             with cl[1]:
                 closing = st.checkbox("Perform Closing?", value=True)
+            with cl[2]:
+                eroding = st.checkbox("Perform Erosion?", value=True)
+            with cl[3]:
+                dilating = st.checkbox("Perform Dilation?", value=True)
             if opening:
-                open_iter = st.slider("Opening Iterations", min_value=1, max_value=12, value=1)
+                open_iter = st.slider("Opening Iterations", min_value=1, max_value=10, value=1)
             if closing:
-                close_iter = st.slider("Closing Iterations",min_value=1, max_value=12, value=1)
+                close_iter = st.slider("Closing Iterations",min_value=1, max_value=10, value=1)
+            if eroding:
+                erode_iter = st.slider("Erode Iterations", min_value=1, max_value=10, value=1)
+            if closing:
+                dilate_iter = st.slider("Dilate Iterations",min_value=1, max_value=10, value=1)
 
 
 if uploaded_file is not None:
@@ -75,7 +83,8 @@ if uploaded_file is not None:
     normalized, morphed, mask, overlay, count, total_area, avg_area = cellCount.cell_detection(
         image, lower_intensity, upper_intensity, image_method,
         block_size, morph_checkbox, minimum_area, average_cell_area,
-        connected_cell_area, scaling, kernel_size, opening, closing, open_iter, close_iter
+        connected_cell_area, scaling, kernel_size, opening, closing,
+        eroding, dilating, open_iter, close_iter, erode_iter, dilate_iter
     )
 
     st.divider()
@@ -117,7 +126,7 @@ if uploaded_file is not None:
         'Original Image with :green[selected minimum area], :blue[average area], and :red[threshold for max cell size] displayed for reference'
 
     with cls[1]:
-        st.image(normalized, caption='Normalized Image', use_column_width=True)
+        st.image(normalized, caption='Processed Image', use_column_width=True)
         st.image(morphed, caption='Morphed Image', use_column_width=True)
 
     with cls[2]:
