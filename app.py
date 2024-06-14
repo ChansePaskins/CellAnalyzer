@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 import cellCount
+from streamlit_image_comparison import image_comparison
 
 st.set_page_config(layout="wide")
 st.title("Cell Counter and Area Analyzer")
@@ -122,4 +123,4 @@ if uploaded_file is not None:
     with cls[2]:
         st.image(overlay, caption='Overlayed Image', use_column_width=True)
 
-    image.size
+    image_comparison(image, overlay)
