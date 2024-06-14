@@ -106,15 +106,19 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
 
             # Find the area of the holes and subtract from the outer contour's area
             hole_area = 0
+            holes = []
             k = hierarchy[0][i][2]
             while k != -1:
                 hole_area += cv2.contourArea(cnts[k])
+                holes.append(cnts[k])
                 k = hierarchy[0][k][0]
 
             net_area = area - hole_area
 
             if net_area > minimum_area or net_area < 0:
-                cv2.drawContours(original, [c], -1, (36, 255, 12), 2)
+                cv2.drawContours(original, [c], -1, (36, 255, 12), 2)  # Draw outer contour in green
+                for hole in holes:
+                    cv2.drawContours(original, [hole], -1, (0, 0, 255), 2)  # Draw holes in red
                 if net_area > connected_cell_area:
                     cells += math.ceil(net_area / average_cell_area)
                     for _ in range(cells):
