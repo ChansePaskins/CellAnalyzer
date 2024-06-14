@@ -72,7 +72,7 @@ def cell_detection(image, lower_intensity, upper_intensity, shadow_toggle,
     converted_area_total = int(sum(cell_areas) / scaling ** 2)
     converted_area_mean = round(np.mean(cell_areas) / scaling ** 2, 2) if cell_areas else 0
 
-    return normalized, morphed, original, cells, converted_area_total, converted_area_mean
+    return normalized, morphed, mask, original, cells, converted_area_total, converted_area_mean
 
 
 if __name__ == "__main__":
