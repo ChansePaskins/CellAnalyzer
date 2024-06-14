@@ -37,11 +37,13 @@ with st.container():
         average_cell_area = st.slider("Average Size of Single Cell", min_value=1, max_value=4000, value=average_cell_area, step=10)
         connected_cell_area = st.slider(
             "Max Size of Cell (for cases where cells are stuck together)", min_value=1, max_value=5000, value=connected_cell_area, step=20)
+        lower_intensity, upper_intensity = st.select_slider("Intensity Thresholds", options=list(range(101)),
+                                                            value=(lower_intensity, upper_intensity))
+        scaling = st.number_input("Scaling Between Pixels and Centimeters", value=3.75)
     with columns[1]:
-        lower_intensity, upper_intensity = st.select_slider("Intensity Thresholds", options=list(range(101)), value=(lower_intensity, upper_intensity))
+
         image_method = st.selectbox("Processing Method (I recommend using Sobel)",
                                     ("Sobel", "Canny", "Canny Channel", "Block Segmentation", "Histogram"))
-        scaling = st.number_input("Scaling Between Pixels and Centimeters", value=3.75)
 
         morph_checkbox = st.checkbox("Apply Morphological Transformations?", value=True)
 
