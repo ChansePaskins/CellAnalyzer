@@ -56,9 +56,9 @@ with st.container():
             with cl[1]:
                 closing = st.checkbox("Perform Closing?")
             if opening:
-                open_iter = st.number_input("Opening Iterations")
+                open_iter = st.slider("Opening Iterations", min_value=1, max_value=12, value=1)
             if closing:
-                close_iter = st.number_input("Closing Iterations")
+                close_iter = st.slider("Closing Iterations",min_value=1, max_value=12, value=1)
 
 
 if uploaded_file is not None:
@@ -115,7 +115,7 @@ if uploaded_file is not None:
 
     with cls[1]:
         st.image(normalized, caption='Normalized Image', use_column_width=True)
-        st.image(morphed, caption='Morphed Image', use_column_width=True)
+        st.image(morphed, caption='Masked Image', use_column_width=True)
 
     with cls[2]:
         st.image(overlay, caption='Overlayed Image', use_column_width=True)
