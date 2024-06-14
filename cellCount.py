@@ -5,7 +5,7 @@ from image_normalization import *
 
 
 def cell_counter(image, lower_intensity, upper_intensity, shadow_toggle,
-        block_size, minimum_area, average_cell_area, connected_cell_area, scaling):
+        block_size, morph_filter, minimum_area, average_cell_area, connected_cell_area, scaling):
     original = image.copy()
 
     # check for color image
@@ -36,7 +36,7 @@ def cell_counter(image, lower_intensity, upper_intensity, shadow_toggle,
     # for grayscale images
     else:
         normalized, morphed, overlayed, cells, total_area, avg_area = grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
-        block_size, minimum_area, average_cell_area, connected_cell_area, scaling)
+        block_size, morph_filter, minimum_area, average_cell_area, connected_cell_area, scaling)
         return normalized, morphed, overlayed, cells, total_area, avg_area
 def color_picture(hsv, original):
 
@@ -70,7 +70,7 @@ def color_picture(hsv, original):
 
 
 def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
-        block_size, minimum_area, average_cell_area, connected_cell_area, scaling):
+        block_size, morph_filter, minimum_area, average_cell_area, connected_cell_area, scaling):
 
     if shadow_toggle == "Block Segmentation":
         # shadowing block correction, histogram eq (recommended)
@@ -88,10 +88,13 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
     mask = cv2.inRange(normalized, lower_intensity, upper_intensity)
 
     # Morphological operations
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-    opening = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=1)
-    close = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel, iterations=2)
-    morphed = close.copy()
+    if morph_filter:
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+        opening = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=1)
+        close = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel, iterations=2)
+        morphed = close.copy()
+    else:
+        morphed = close = normalized
 
     # Find contours with hierarchy
     cnts, hierarchy = cv2.findContours(close, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)

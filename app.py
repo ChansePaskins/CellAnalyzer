@@ -17,7 +17,7 @@ lower_intensity = 0
 upper_intensity = 60
 block_size = 100
 scaling = 3.75
-
+morph_checkbox = True
 # Create a form for user input
 with st.container():
     # File uploader for image upload
@@ -36,6 +36,8 @@ with st.container():
                                     ("Sobel", "Canny", "Canny Channel", "Block Segmentation", "Histogram"))
         scaling = st.number_input("Scaling Between Pixels and Centimeters", value=3.75)
 
+        morph_checkbox = st.checkbox("Apply Morphological Transformations?")
+
     if image_method == "Block Segmentation":
         block_size = st.slider("Block Size", min_value=50, max_value=200, value=block_size, step=10)
 
@@ -48,8 +50,10 @@ if uploaded_file is not None:
     # Decode the byte array to an image
     image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
-    normalized, morphed, overlay, count, total_area, avg_area = cellCount.cell_counter(image, lower_intensity, upper_intensity, image_method,
-        block_size, minimum_area, average_cell_area, connected_cell_area, scaling)
+    normalized, morphed, overlay, count, total_area, avg_area = cellCount.cell_counter(
+        image, lower_intensity, upper_intensity, image_method,
+        block_size, morph_checkbox, minimum_area, average_cell_area, connected_cell_area, scaling
+    )
 
     st.divider()
 
