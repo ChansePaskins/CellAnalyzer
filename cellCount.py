@@ -4,11 +4,12 @@ import math
 from image_normalization import *
 
 
-def cell_detection(original, lower_intensity, upper_intensity, shadow_toggle,
+def cell_detection(image, lower_intensity, upper_intensity, shadow_toggle,
                    block_size, morph_filter, minimum_area, average_cell_area,
                    connected_cell_area, scaling, kernel_size, opening, closing,
                    iter1, iter2):
 
+    original = image.copy()
     if shadow_toggle == "Block Segmentation":
         # shadowing block correction, histogram eq (recommended)
         normalized = shadow_correction(original, block_size)
