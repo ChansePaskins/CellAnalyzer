@@ -50,9 +50,10 @@ if uploaded_file is not None:
     # Decode the byte array to an image
     image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
-    normalized, morphed, overlay, count, total_area, avg_area = cellCount.cell_counter(
+    normalized, morphed, overlay, count, total_area, avg_area = cellCount.cell_detection(
         image, lower_intensity, upper_intensity, image_method,
-        block_size, morph_checkbox, minimum_area, average_cell_area, connected_cell_area, scaling
+        block_size, morph_checkbox, minimum_area, average_cell_area,
+        connected_cell_area, scaling, kernel_size, opening, closing, open_iter, close_iter
     )
 
     st.divider()

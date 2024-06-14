@@ -2,6 +2,70 @@ import numpy as np
 import cv2
 
 
+def morphological_effects(image, opening, closing, iter1, iter2, kernel_size):
+
+    # Morphological operations
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
+
+    if opening:
+        image = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel, iterations=iter1)
+    if closing:
+        image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel, iterations=iter2)
+
+    return image
+
+def apply_sobel_filter(image):
+    # Apply Sobel filter in the x direction
+    sobel_x = cv2.Sobel(image, cv2.CV_64F, dx=1, dy=0, ksize=1)
+
+    # Apply Sobel filter in the y direction
+    sobel_y = cv2.Sobel(image, cv2.CV_64F, dx=0, dy=1, ksize=1)
+
+    # Compute the gradient magnitude
+    gradient_magnitude = cv2.magnitude(sobel_x, sobel_y)
+
+    # Normalize the result to fit in the range [0, 255]
+    gradient_magnitude = cv2.normalize(gradient_magnitude, None, 0, 255, cv2.NORM_MINMAX)
+
+    # Convert to uint8 type for displaying
+    gradient_magnitude = gradient_magnitude.astype(np.uint8)
+
+    # Convert to Grayscale
+    gray_magnitude = cv2.cvtColor(gradient_magnitude, cv2.COLOR_BGR2GRAY)
+
+    equalized = cv2.equalizeHist(gray_magnitude)
+
+    return equalized
+
+
+def apply_canny_filter(image):
+    # Apply Gaussian blur to reduce noise and improve edge detection
+    blurred_image = cv2.GaussianBlur(image, (5, 5), 1.4)
+
+    # Apply Canny edge detection
+    edges = cv2.Canny(blurred_image, 0, 100)
+
+    # Apply dilation to close gaps in edges
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    dilated_edges = cv2.dilate(edges, kernel, iterations=1)
+
+    return dilated_edges
+
+
+def apply_canny_filter_area(image):
+    # Apply Gaussian blur to reduce noise and improve edge detection
+    blurred_image = cv2.GaussianBlur(image, (5, 5), 1.4)
+
+    # Apply Canny edge detection
+    edges = cv2.Canny(blurred_image, 0, 100)
+
+    # Apply dilation to close gaps in edges
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    dilated_edges = cv2.dilate(edges, kernel, iterations=2)
+
+    return dilated_edges
+
+
 # Adjusts edge brightness based on average values
 def histogram_equalization(image):
     height, width, _ = image.shape
@@ -85,52 +149,3 @@ def shadow_correction(image, block_size):
     return corrected_image
 
 
-def apply_sobel_filter(image):
-    # Apply Sobel filter in the x direction
-    sobel_x = cv2.Sobel(image, cv2.CV_64F, dx=1, dy=0, ksize=1)
-
-    # Apply Sobel filter in the y direction
-    sobel_y = cv2.Sobel(image, cv2.CV_64F, dx=0, dy=1, ksize=1)
-
-    # Compute the gradient magnitude
-    gradient_magnitude = cv2.magnitude(sobel_x, sobel_y)
-
-    # Normalize the result to fit in the range [0, 255]
-    gradient_magnitude = cv2.normalize(gradient_magnitude, None, 0, 255, cv2.NORM_MINMAX)
-
-    # Convert to uint8 type for displaying
-    gradient_magnitude = gradient_magnitude.astype(np.uint8)
-
-    # Convert to Grayscale
-    gray_magnitude = cv2.cvtColor(gradient_magnitude, cv2.COLOR_BGR2GRAY)
-
-    equalized = cv2.equalizeHist(gray_magnitude)
-
-    return equalized
-
-
-def apply_canny_filter(image):
-    # Apply Gaussian blur to reduce noise and improve edge detection
-    blurred_image = cv2.GaussianBlur(image, (5, 5), 1.4)
-
-    # Apply Canny edge detection
-    edges = cv2.Canny(blurred_image, 0, 100)
-
-    # Apply dilation to close gaps in edges
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-    dilated_edges = cv2.dilate(edges, kernel, iterations=1)
-
-    return dilated_edges
-
-def apply_canny_filter_area(image):
-    # Apply Gaussian blur to reduce noise and improve edge detection
-    blurred_image = cv2.GaussianBlur(image, (5, 5), 1.4)
-
-    # Apply Canny edge detection
-    edges = cv2.Canny(blurred_image, 0, 100)
-
-    # Apply dilation to close gaps in edges
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-    dilated_edges = cv2.dilate(edges, kernel, iterations=2)
-
-    return dilated_edges

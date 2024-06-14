@@ -4,73 +4,10 @@ import math
 from image_normalization import *
 
 
-def cell_counter(image, lower_intensity, upper_intensity, shadow_toggle,
-        block_size, morph_filter, minimum_area, average_cell_area, connected_cell_area, scaling):
-    original = image.copy()
-
-    # check for color image
-    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-
-    # Split the HSV image into its channels (splits into color channels for processing)
-    h, s, v = cv2.split(hsv)
-
-    # Display each channel separately (for testing)
-    """cv2.namedWindow('Hue', cv2.WINDOW_NORMAL)
-    cv2.imshow('Hue', h)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    cv2.namedWindow('Saturation', cv2.WINDOW_NORMAL)
-    cv2.imshow('Saturation', s)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    cv2.namedWindow('Value', cv2.WINDOW_NORMAL)
-    cv2.imshow('Value', v)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()"""
-
-    # checks saturation level. If there is a distinct amount of saturation (from a color image or GFP), it will use HSV
-    if np.mean(s) >= 255:
-        print("Colored Picture Detected: Splitting into HSV format\n Notice, this method hasn't been implemented yet")
-        color_picture(image, original)
-
-    # for grayscale images
-    else:
-        normalized, morphed, overlayed, cells, total_area, avg_area = grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
-        block_size, morph_filter, minimum_area, average_cell_area, connected_cell_area, scaling)
-        return normalized, morphed, overlayed, cells, total_area, avg_area
-def color_picture(hsv, original):
-
-    hsv_lower = np.array([156, 60, 0])
-    hsv_upper = np.array([179, 115, 255])
-    mask = cv2.inRange(hsv, hsv_lower, hsv_upper)
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3,3))
-    opening = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=1)
-    close = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel, iterations=2)
-
-    cnts = cv2.findContours(close, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    cnts = cnts[0] if len(cnts) == 2 else cnts[1]
-
-    minimum_area = 200
-    average_cell_area = 650
-    connected_cell_area = 1000
-    cells = 0
-    for c in cnts:
-        area = cv2.contourArea(c)
-        if area > minimum_area:
-            cv2.drawContours(original, [c], -1, (36,255,12), 2)
-            if area > connected_cell_area:
-                cells += math.ceil(area / average_cell_area)
-            else:
-                cells += 1
-    print('Cells: {}'.format(cells))
-
-    cv2.imshow('close', close)
-    cv2.imshow('original', original)
-    cv2.waitKey()
-
-
-def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
-        block_size, morph_filter, minimum_area, average_cell_area, connected_cell_area, scaling):
+def cell_detection(original, lower_intensity, upper_intensity, shadow_toggle,
+                   block_size, morph_filter, minimum_area, average_cell_area,
+                   connected_cell_area, scaling, kernel_size, opening, closing,
+                   iter1, iter2):
 
     if shadow_toggle == "Block Segmentation":
         # shadowing block correction, histogram eq (recommended)
@@ -84,20 +21,18 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
         normalized = cv2.bitwise_not(apply_canny_filter(original))
     elif shadow_toggle == 'Canny Channel':
         normalized = cv2.bitwise_not(apply_canny_filter_area(original))
+    else:
+        normalized = original
 
     mask = cv2.inRange(normalized, lower_intensity, upper_intensity)
 
-    # Morphological operations
     if morph_filter:
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-        opening = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=1)
-        close = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel, iterations=1)
-        morphed = close.copy()
+        morphed = morpholological_effects(image, opening, closing, iter1, iter2, kernel_size)
     else:
-        morphed = close = normalized
+        morphed = mask
 
     # Find contours with hierarchy
-    cnts, hierarchy = cv2.findContours(close, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
+    cnts, hierarchy = cv2.findContours(morphed, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
 
     cells = 0
     cell_areas = []
