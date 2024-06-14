@@ -7,15 +7,9 @@ import cellCount
 from streamlit_image_comparison import image_comparison
 
 st.set_page_config(layout="wide")
-st.title("Cell Counter and Area Analyzer")
-clmns = st.columns(2)
-
-with clms[0]:
-    st.write("Upload an image and select parameters")
-with clms[1]:
-    
 
 # Define default values for sliders
+example = False
 minimum_area = 200
 average_cell_area = 400
 connected_cell_area = 1000
@@ -34,7 +28,17 @@ close_iter = 1
 erode_iter = 1
 dilate_iter = 1
 
+st.title("Cell Counter and Area Analyzer")
+clmns = st.columns(2)
 
+
+with clms[0]:
+    st.write("Upload an image and select parameters")
+with clms[1]:
+    example = st.button("Show example")
+
+if example:
+    uploaded_file = cv2.imread("example.tif")
 # Create a form for user input
 with st.container():
     # File uploader for image upload
