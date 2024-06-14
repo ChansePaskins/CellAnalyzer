@@ -132,7 +132,7 @@ if uploaded_file is not None:
 
     with cls[1]:
         st.image(normalized, caption='Processed Image', use_column_width=True)
-        st.image(morphed, caption='Morphed Image', use_column_width=True) if morph_checkbox else "Morph Options Unselected"
+        st.image(morphed, caption='Morphed Image', use_column_width=True) if morph_checkbox else st.echo("Morph Options Unselected")
 
     with cls[2]:
         st.image(overlay, caption='Overlayed Image', use_column_width=True)
