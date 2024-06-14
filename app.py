@@ -49,7 +49,7 @@ with st.container():
         block_size = st.slider("Block Size", min_value=50, max_value=200, value=block_size, step=10)
 
     if morph_checkbox:
-        kernel_size = st.number_input("Kernel Size (must be odd number)")
+        kernel_size = st.slider("Kernel Size (must be odd number)", min_value=1, max_value=11, value=3, step=2)
         opening = st.checkbox("Perform Opening?")
         closing = st.checkbox("Perform Closing?")
         if opening:
