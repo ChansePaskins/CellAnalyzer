@@ -37,7 +37,7 @@ def cell_counter(image, lower_intensity, upper_intensity, shadow_toggle,
     else:
         normalized, morphed, overlayed, cells, total_area, avg_area = grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
         block_size, minimum_area, average_cell_area, connected_cell_area, scaling)
-        return normalized, overlayed, cells, total_area, avg_area
+        return normalized, morphed, overlayed, cells, total_area, avg_area
 def color_picture(hsv, original):
 
     hsv_lower = np.array([156, 60, 0])
