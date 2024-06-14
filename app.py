@@ -55,21 +55,22 @@ with st.container():
             kernel_size = st.slider("Kernel Size (must be odd number)", min_value=1, max_value=11, value=3, step=2)
             cl = st.columns(4)
             with cl[0]:
-                opening = st.checkbox("Perform Opening?", value=True)
-            with cl[1]:
-                closing = st.checkbox("Perform Closing?", value=True)
-            with cl[2]:
                 eroding = st.checkbox("Perform Erosion?", value=True)
-            with cl[3]:
+            with cl[1]:
                 dilating = st.checkbox("Perform Dilation?", value=True)
+            with cl[2]:
+                opening = st.checkbox("Perform Opening?", value=True)
+            with cl[3]:
+                closing = st.checkbox("Perform Closing?", value=True)
+                
+            if eroding:
+                erode_iter = st.slider("Erode Iterations", min_value=1, max_value=10, value=1)
+            if dilating:
+                dilate_iter = st.slider("Dilate Iterations",min_value=1, max_value=10, value=1)
             if opening:
                 open_iter = st.slider("Opening Iterations", min_value=1, max_value=10, value=1)
             if closing:
                 close_iter = st.slider("Closing Iterations",min_value=1, max_value=10, value=1)
-            if eroding:
-                erode_iter = st.slider("Erode Iterations", min_value=1, max_value=10, value=1)
-            if closing:
-                dilate_iter = st.slider("Dilate Iterations",min_value=1, max_value=10, value=1)
 
 
 if uploaded_file is not None:
