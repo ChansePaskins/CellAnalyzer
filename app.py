@@ -22,8 +22,12 @@ morph_checkbox = True
 kernel_size = 3
 opening = True
 closing = True
+eroding = False
+dilating = False
 open_iter = 1
 close_iter = 1
+erode_iter = 1
+dilate_iter =1
 
 
 # Create a form for user input
@@ -62,7 +66,7 @@ with st.container():
                 opening = st.checkbox("Perform Opening?", value=True)
             with cl[3]:
                 closing = st.checkbox("Perform Closing?", value=True)
-                
+
             if eroding:
                 erode_iter = st.slider("Erode Iterations", min_value=1, max_value=10, value=1)
             if dilating:
