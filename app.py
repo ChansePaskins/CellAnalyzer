@@ -27,7 +27,7 @@ dilating = False
 open_iter = 1
 close_iter = 1
 erode_iter = 1
-dilate_iter =1
+dilate_iter = 1
 
 
 # Create a form for user input
@@ -132,7 +132,7 @@ if uploaded_file is not None:
 
     with cls[1]:
         st.image(normalized, caption='Processed Image', use_column_width=True)
-        st.image(morphed, caption='Morphed Image', use_column_width=True)
+        st.image(morphed, caption='Morphed Image', use_column_width=True) if morph_checkbox else None
 
     with cls[2]:
         st.image(overlay, caption='Overlayed Image', use_column_width=True)
