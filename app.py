@@ -50,8 +50,11 @@ with st.container():
 
         if morph_checkbox:
             kernel_size = st.slider("Kernel Size (must be odd number)", min_value=1, max_value=11, value=3, step=2)
-            opening = st.checkbox("Perform Opening?")
-            closing = st.checkbox("Perform Closing?")
+            cl = st.columns(2)
+            with cl[0]:
+                opening = st.checkbox("Perform Opening?")
+            with cl[1]:
+                closing = st.checkbox("Perform Closing?")
             if opening:
                 open_iter = st.number_input("Opening Iterations")
             if closing:
