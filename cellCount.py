@@ -117,7 +117,7 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
 
                     area = area - hole_area
 
-            if area > minimum_area or net_area < 0:
+            if area > minimum_area:
                 cv2.drawContours(original, [c], -1, (36, 255, 12), 2)  # Draw outer contour in green
                 for hole in holes:
                     cv2.drawContours(original, [hole], -1, (0, 0, 255), 2)  # Draw holes in red
