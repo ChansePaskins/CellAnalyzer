@@ -48,7 +48,7 @@ if uploaded_file is not None:
     # Decode the byte array to an image
     image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
-    normalized, overlay, count, total_area, avg_area = cellCount.cell_counter(image, lower_intensity, upper_intensity, image_method,
+    normalized, morphed, overlay, count, total_area, avg_area = cellCount.cell_counter(image, lower_intensity, upper_intensity, image_method,
         block_size, minimum_area, average_cell_area, connected_cell_area, scaling)
 
     st.divider()
@@ -91,6 +91,7 @@ if uploaded_file is not None:
 
     with cls[1]:
         st.image(normalized, caption='Normalized Image', use_column_width=True)
+        st.image(morphed, caption='Morphed Image', use_column_width=True)
 
     with cls[2]:
         st.image(overlay, caption='Overlayed Image', use_column_width=True)

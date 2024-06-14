@@ -35,7 +35,7 @@ def cell_counter(image, lower_intensity, upper_intensity, shadow_toggle,
 
     # for grayscale images
     else:
-        normalized, overlayed, cells, total_area, avg_area = grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
+        normalized, morphed, overlayed, cells, total_area, avg_area = grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
         block_size, minimum_area, average_cell_area, connected_cell_area, scaling)
         return normalized, overlayed, cells, total_area, avg_area
 def color_picture(hsv, original):
@@ -132,7 +132,7 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
     converted_area_total = int(sum(cell_areas) / scaling ** 2)
     converted_area_mean = round(np.mean(cell_areas) / scaling ** 2, 2) if cell_areas else 0
 
-    return normalized, original, cells, converted_area_total, converted_area_mean
+    return normalized, morphed, original, cells, converted_area_total, converted_area_mean
 
 
 if __name__ == "__main__":
