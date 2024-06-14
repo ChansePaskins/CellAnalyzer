@@ -92,27 +92,39 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
     opening = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=1)
     close = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel, iterations=2)
 
-    # Find contours
-    cnts, _ = cv2.findContours(close, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # Find contours with hierarchy
+    cnts, hierarchy = cv2.findContours(close, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
 
     cells = 0
     cell_areas = []
 
     # Process contours
-    for c in cnts:
-        area = cv2.contourArea(c)
-        if area > minimum_area or area < 0:
-            cv2.drawContours(original, [c], -1, (36, 255, 12), 2)
-            if area > connected_cell_area:
-                cells += math.ceil(area / average_cell_area)
-                for i in range(cells):
-                    cell_areas.append(average_cell_area)
-            else:
-                cells += 1 if area > 0 else None
-                cell_areas.append(area)
+    for i, c in enumerate(cnts):
+        # Only consider parent contours (outer contours)
+        if hierarchy[0][i][3] == -1:  # No parent, it's an outer contour
+            area = cv2.contourArea(c)
 
-    converted_area_total = int(sum(cell_areas) / scaling**2)
-    converted_area_mean = round(np.mean(cell_areas) / scaling**2, 2) if cell_areas else 0
+            # Find the area of the holes and subtract from the outer contour's area
+            hole_area = 0
+            k = hierarchy[0][i][2]
+            while k != -1:
+                hole_area += cv2.contourArea(cnts[k])
+                k = hierarchy[0][k][0]
+
+            net_area = area - hole_area
+
+            if net_area > minimum_area or net_area < 0:
+                cv2.drawContours(original, [c], -1, (36, 255, 12), 2)
+                if net_area > connected_cell_area:
+                    cells += math.ceil(net_area / average_cell_area)
+                    for _ in range(cells):
+                        cell_areas.append(average_cell_area)
+                else:
+                    cells += 1 if net_area > 0 else None
+                    cell_areas.append(net_area)
+
+    converted_area_total = int(sum(cell_areas) / scaling ** 2)
+    converted_area_mean = round(np.mean(cell_areas) / scaling ** 2, 2) if cell_areas else 0
 
     return normalized, original, cells, converted_area_total, converted_area_mean
 
