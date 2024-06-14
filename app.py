@@ -36,7 +36,7 @@ with clms[0]:
     st.write("Upload an image and select parameters")
 with clms[1]:
     if st.button("Show example"):
-        example_image = cv2.imread("example.tif")
+        example_image = Image.open("example.tif")
         st.session_state['uploaded_image'] = example_image
 
 # Create a form for user input
