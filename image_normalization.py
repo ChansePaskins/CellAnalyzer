@@ -4,7 +4,6 @@ import cv2
 
 def morphological_effects(image, opening, closing, iter1, iter2, kernel_size):
 
-    st.write(kernel_size)
     # Morphological operations
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
 
