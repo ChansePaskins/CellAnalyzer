@@ -121,13 +121,13 @@ def grayscale_picture(original, lower_intensity, upper_intensity, shadow_toggle,
                 cv2.drawContours(original, [c], -1, (36, 255, 12), 2)  # Draw outer contour in green
                 for hole in holes:
                     cv2.drawContours(original, [hole], -1, (0, 0, 255), 2)  # Draw holes in red
-                if net_area > connected_cell_area:
-                    cells += math.ceil(net_area / average_cell_area)
+                if area > connected_cell_area:
+                    cells += math.ceil(area / average_cell_area)
                     for _ in range(cells):
                         cell_areas.append(average_cell_area)
                 else:
-                    cells += 1 if net_area > 0 else None
-                    cell_areas.append(net_area)
+                    cells += 1 if area > 0 else None
+                    cell_areas.append(area)
 
     converted_area_total = int(sum(cell_areas) / scaling ** 2)
     converted_area_mean = round(np.mean(cell_areas) / scaling ** 2, 2) if cell_areas else 0
