@@ -45,17 +45,17 @@ with st.container():
 
         morph_checkbox = st.checkbox("Apply Morphological Transformations?", value=True)
 
-    if image_method == "Block Segmentation":
-        block_size = st.slider("Block Size", min_value=50, max_value=200, value=block_size, step=10)
+        if image_method == "Block Segmentation":
+            block_size = st.slider("Block Size", min_value=50, max_value=200, value=block_size, step=10)
 
-    if morph_checkbox:
-        kernel_size = st.slider("Kernel Size (must be odd number)", min_value=1, max_value=11, value=3, step=2)
-        opening = st.checkbox("Perform Opening?")
-        closing = st.checkbox("Perform Closing?")
-        if opening:
-            open_iter = st.number_input("Opening Iterations")
-        if closing:
-            close_iter = st.number_input("Closing Iterations")
+        if morph_checkbox:
+            kernel_size = st.slider("Kernel Size (must be odd number)", min_value=1, max_value=11, value=3, step=2)
+            opening = st.checkbox("Perform Opening?")
+            closing = st.checkbox("Perform Closing?")
+            if opening:
+                open_iter = st.number_input("Opening Iterations")
+            if closing:
+                close_iter = st.number_input("Closing Iterations")
 
 
 if uploaded_file is not None:
