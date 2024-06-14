@@ -8,7 +8,12 @@ from streamlit_image_comparison import image_comparison
 
 st.set_page_config(layout="wide")
 st.title("Cell Counter and Area Analyzer")
-st.write("Upload an image and select parameters")
+clmns = st.columns(2)
+
+with clms[0]:
+    st.write("Upload an image and select parameters")
+with clms[1]:
+    
 
 # Define default values for sliders
 minimum_area = 200
