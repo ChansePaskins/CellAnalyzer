@@ -123,4 +123,6 @@ if uploaded_file is not None:
     with cls[2]:
         st.image(overlay, caption='Overlayed Image', use_column_width=True)
 
-    image_comparison(image, overlay)
+    with st.container():
+
+        image_comparison(image, overlay)
