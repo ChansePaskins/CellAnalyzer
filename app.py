@@ -31,7 +31,7 @@ dilate_iter = 1
 
 
 # Create a form for user input
-with st.expander(expanded=True):
+with st.expander("Parameters", expanded=True):
     # File uploader for image upload
     uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png", "bmp", "tif"])
 
