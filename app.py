@@ -101,7 +101,7 @@ if uploaded_file is not None:
     with cols[1]:
         st.metric("Total Cell Area", f"{total_area} µm\u00b2")
     with cols[2]:
-        st.metric("Average Cell Area", f"{average_cell_area} µm\u00b2")
+        st.metric("Average Cell Area", f"{round(total_area/count, 2)} µm\u00b2")
 
     st.divider()
 
