@@ -4,9 +4,11 @@ import cv2
 
 def morphological_effects(image, opening, closing, erosion, dilation, iter1, iter2, iter3, iter4, kernel_size):
 
-    # Morphological operations
+    # Create kernel based on user input (normal people call them filters, graphic designers call them masks)
+    # Instagram filters use the same base operations, this is no different.
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
 
+    # To prevent from overwriting image
     result = image.copy()
 
     # Apply erosion
@@ -27,9 +29,14 @@ def morphological_effects(image, opening, closing, erosion, dilation, iter1, ite
 
     return result
 
+
 def apply_sobel_filter(image):
+
+    # Apply Gaussian blur to reduce noise and improve edge detection
+    blurred_image = cv2.GaussianBlur(image, (5, 5), 1.4)
+
     # Apply Sobel filter in the x direction
-    sobel_x = cv2.Sobel(image, cv2.CV_64F, dx=1, dy=0, ksize=1)
+    sobel_x = cv2.Sobel(blurred_image, cv2.CV_64F, dx=1, dy=0, ksize=1)
 
     # Apply Sobel filter in the y direction
     sobel_y = cv2.Sobel(image, cv2.CV_64F, dx=0, dy=1, ksize=1)
@@ -82,6 +89,7 @@ def apply_canny_filter_area(image):
 
 # Adjusts edge brightness based on average values
 def histogram_equalization(image):
+
     height, width, _ = image.shape
     center_x, center_y = width / 2, height / 2
 
@@ -163,8 +171,31 @@ def shadow_correction(image, block_size):
     return corrected_image
 
 
-def saturation_channel(image):
-    # Convert the image from BGR to HSV
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+def hsv_channel(image):
+    # This isn't quite working yet. Having issues with different channels. For now, we use only grayscale
+    #image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2XYZ)
+    h, L, S = cv2.split(image)
+
+    #cv2.imshow('H', h)
+    #cv2.imshow('L', L)
+    #cv2.imshow('S', S)
+    #cv2.waitKey()
+
+    return L
+
+def hls_channel(image):
+    # This isn't quite working yet. Having issues with different channels. For now, we use only grayscale
+    #image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2HLS)
+    h, L, S = cv2.split(image)
+
+    cv2.imshow('H', h)
+    cv2.imshow('L', L)
+    cv2.imshow('S', S)
+    cv2.waitKey()
 
     return image
+
