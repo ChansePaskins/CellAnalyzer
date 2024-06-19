@@ -136,7 +136,7 @@ if uploaded_file is not None:
         # Displays original image
         st.image(image, caption='Original Image', use_column_width=True)
 
-        st.image(mask, caption="Masked Image", use_column_width=True)
+        st.image(mask, caption="Masked Image (Using intensity thresholds defined above)", use_column_width=True)
 
 
 
@@ -167,17 +167,17 @@ if uploaded_file is not None:
 
         # Displays image after morphological operations
         if morph_checkbox:
-            st.image(morphed, caption='Morphed Image', use_column_width=True)
+            st.image(morphed, caption='Morphed Image (fills in holes and borders)', use_column_width=True)
         else:
             st.info("Morph Options Unselected")
         #######################################################################################
 
     with cls[2]:
         # Displays image after edge detection processing
-        st.image(normalized, caption='Processed Image', use_column_width=True)
+        st.image(normalized, caption='Processed Image (Image made from edge detection algorithm)', use_column_width=True)
 
         # Displays original image with calculated contours overlayed
-        st.image(overlay, caption='Overlayed Image', use_column_width=True)
+        st.image(overlay, caption='Overlayed Image (green is area counted, red (if there is any) are detected holes)', use_column_width=True)
 
 
     st.divider()

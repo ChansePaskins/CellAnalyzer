@@ -90,7 +90,7 @@ def cell_detection(image, lower_intensity, upper_intensity, fluorescence, shadow
                 k = hierarchy[0][k][0]
 
             # Subtract the total hole area from the outer contour area (not working well)
-            #area = area - holes_area
+            area = area - holes_area
 
             # Only counts the contour if it is bigger than the minimum area described
             if area > minimum_area:
