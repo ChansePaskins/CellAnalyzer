@@ -165,9 +165,6 @@ def shadow_correction(image, block_size):
 
 def saturation_channel(image):
     # Convert the image from BGR to HSV
-    hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    # Split the HSV image into its channels
-    h, s, v = cv2.split(hsv_image)
-    # Return the saturation channel as color
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    return v
+    return image
