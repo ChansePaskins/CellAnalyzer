@@ -73,20 +73,6 @@ def apply_canny_filter(image):
     return dilated_edges
 
 
-def apply_canny_filter_area(image):
-    # Apply Gaussian blur to reduce noise and improve edge detection
-    blurred_image = cv2.GaussianBlur(image, (5, 5), 1.4)
-
-    # Apply Canny edge detection
-    edges = cv2.Canny(blurred_image, 0, 100)
-
-    # Apply dilation to close gaps in edges
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-    dilated_edges = cv2.dilate(edges, kernel, iterations=2)
-
-    return dilated_edges
-
-
 # Adjusts edge brightness based on average values
 def histogram_equalization(image):
 
@@ -171,7 +157,7 @@ def shadow_correction(image, block_size):
     return corrected_image
 
 
-def hsv_channel(image):
+def xyz_channel(image):
     # This isn't quite working yet. Having issues with different channels. For now, we use only grayscale
     #image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
@@ -185,17 +171,19 @@ def hsv_channel(image):
 
     return L
 
-def hls_channel(image):
-    # This isn't quite working yet. Having issues with different channels. For now, we use only grayscale
-    #image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2HLS)
-    h, L, S = cv2.split(image)
+def apply_laplace_filter(src):
 
-    cv2.imshow('H', h)
-    cv2.imshow('L', L)
-    cv2.imshow('S', S)
-    cv2.waitKey()
+    # Remove noise by blurring with a Gaussian filter
+    src = cv2.GaussianBlur(src, (3, 3), 0)
 
-    return image
+    # Convert the image to grayscale
+    src_gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
 
+    # Apply Laplace function
+    dst = cv2.Laplacian(src_gray, cv2.CV_16S, ksize=5)
+
+    # converting back to uint8
+    abs_dst = cv2.convertScaleAbs(dst)
+
+    return abs_dst

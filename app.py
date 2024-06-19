@@ -57,7 +57,7 @@ with st.expander("Parameters", expanded=True):
     with columns[1]:
 
         image_method = st.selectbox("Processing Method (I recommend using Sobel)",
-                                    ("Sobel", "Canny", "Canny Channel", "Block Segmentation", "Histogram (Not Working)", None))
+                                    ("Sobel", "Canny", "Laplace", "Block Segmentation", "Histogram (Not Working)", None))
 
         col = st.columns(2)
         with col[0]:

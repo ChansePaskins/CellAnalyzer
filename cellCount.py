@@ -16,7 +16,7 @@ def cell_detection(image, lower_intensity, upper_intensity, fluorescence, shadow
     # fluorescent images invert normal coloring. In brightfield, cells are dark. Under fluorescence, cells are bright
     if fluorescence:
         # converts to grayscale and inverts image
-        original = cv2.bitwise_not(hsv_channel(original))
+        original = cv2.bitwise_not(xyz_channel(original))
 
     # Uses Sobel edge detection algorithm to better define cell edges
     if shadow_toggle == "Sobel":
@@ -27,11 +27,9 @@ def cell_detection(image, lower_intensity, upper_intensity, fluorescence, shadow
     elif shadow_toggle == 'Canny':
         normalized = cv2.bitwise_not(apply_canny_filter(original))
 
-    # This eventually will be used for highly confluent plates.
-    # This will completely skip the findContours() function and just return area based on thresholding
-    # Honestly this is what ImageJ does minus the edge detection algorithms
-    elif shadow_toggle == 'Canny Channel (For highly confluent plates)':
-        normalized = cv2.bitwise_not(apply_canny_filter_area(original))
+    # Similar to both Sobel and Canny
+    elif shadow_toggle == 'Laplace':
+        normalized = cv2.bitwise_not(apply_laplace_filter(original))
 
     # For cases of extreme shadowing. This breaks the image into several blocks and normalized brightness. Old method.
     elif shadow_toggle == "Block Segmentation":
@@ -86,7 +84,7 @@ def cell_detection(image, lower_intensity, upper_intensity, fluorescence, shadow
             k = hierarchy[0][i][2]
             while k != -1:
                 hole_area = cv2.contourArea(cnts[k])
-                if hole_area > connected_cell_area:
+                if hole_area > connected_cell_area*2:
                     holes_area += hole_area
                     holes.append(cnts[k])
                 k = hierarchy[0][k][0]
@@ -98,8 +96,8 @@ def cell_detection(image, lower_intensity, upper_intensity, fluorescence, shadow
             if area > minimum_area:
                 cv2.drawContours(overlay, [c], -1, color, 2)  # Draw outer contour
                 # holes aren't working
-                #for hole in holes:
-                    #cv2.drawContours(overlay, [hole], -1, (255, 0, 0), 2)  # Draw holes
+                for hole in holes:
+                    cv2.drawContours(overlay, [hole], -1, (255, 0, 0), 2)  # Draw holes
 
                 # If area is determined to be larger than a single cell, calculate the number of cells
                 if area > connected_cell_area:
