@@ -11,7 +11,7 @@ st.title("Cell Counter and Area Analyzer")
 st.write("Upload an image and select parameters")
 
 # Define default values for sliders
-minimum_area = 200
+minimum_area = 75
 average_cell_area = 400
 connected_cell_area = 1000
 lower_intensity = 0

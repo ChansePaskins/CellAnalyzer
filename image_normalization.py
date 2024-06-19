@@ -44,9 +44,10 @@ def apply_sobel_filter(image):
     gradient_magnitude = gradient_magnitude.astype(np.uint8)
 
     # Convert to Grayscale
-    gray_magnitude = cv2.cvtColor(gradient_magnitude, cv2.COLOR_BGR2GRAY)
+    if len(image.shape) > 2:
+        gradient_magnitude = cv2.cvtColor(gradient_magnitude, cv2.COLOR_BGR2GRAY)
 
-    equalized = cv2.equalizeHist(gray_magnitude)
+    equalized = cv2.equalizeHist(gradient_magnitude)
 
     return equalized
 
@@ -167,5 +168,6 @@ def saturation_channel(image):
     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     # Split the HSV image into its channels
     h, s, v = cv2.split(hsv_image)
-    # Return the saturation channel
+    # Return the saturation channel as color
+
     return s
