@@ -117,6 +117,8 @@ if uploaded_file is not None:
     minimum_area = minimum_area * scaling ** 2
     average_cell_area = average_cell_area * scaling ** 2
     connected_cell_area = connected_cell_area * scaling ** 2
+    height, width = image.shape[:2]
+    overall_area = (height * width) / scaling**2
 
     # Calls master function to perform all operations using selected parameters
     normalized, morphed, mask, overlay, count, total_area, threshold_area, avg_area = cellCount.cell_detection(
@@ -128,14 +130,16 @@ if uploaded_file is not None:
 
     # display for various metrics calculated
     st.divider()
-    cols = st.columns(4)
+    cols = st.columns(5)
     with cols[0]:
         st.metric("Total Cell Count", count)
     with cols[1]:
-        st.metric("Total Cell Area (by contours)", f"{total_area} µm\u00b2")
+        st.metric("Total Area of Picture", f"{round(overall_area)} µm\u00b2")
     with cols[2]:
-        st.metric("Total Cell Area (by threshold)", f"{threshold_area} µm\u00b2")
+        st.metric("Total Cell Area (by contours)", f"{total_area} µm\u00b2")
     with cols[3]:
+        st.metric("Total Cell Area (by threshold)", f"{threshold_area} µm\u00b2")
+    with cols[4]:
         if count > 0:
             st.metric("Average Cell Area", f"{round(total_area/count, 2)} µm\u00b2")
         if count == 0:
@@ -150,8 +154,6 @@ if uploaded_file is not None:
         st.image(image, caption='Original Image', use_column_width=True)
 
         st.image(mask, caption="Masked Image (Using intensity thresholds defined above)", use_column_width=True)
-
-
 
     with cls[1]:
         #####################################################################################

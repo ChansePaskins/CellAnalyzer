@@ -2,3 +2,4 @@ opencv-python-headless
 pillow
 matplotlib
 streamlit_image_comparison
+pandas
