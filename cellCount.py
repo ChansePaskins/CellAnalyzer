@@ -6,7 +6,7 @@ from image_normalization import *
 
 # Master function
 def cell_detection(image, lower_intensity, upper_intensity, fluorescence, shadow_toggle,
-                   block_size, morph_filter, minimum_area, average_cell_area,
+                   block_size, hole_size, morph_filter, minimum_area, average_cell_area,
                    connected_cell_area, scaling, kernel_size, opening, closing,
                    erosion, dilation, iter1, iter2, iter3, iter4):
 
@@ -84,7 +84,7 @@ def cell_detection(image, lower_intensity, upper_intensity, fluorescence, shadow
             k = hierarchy[0][i][2]
             while k != -1:
                 hole_area = cv2.contourArea(cnts[k])
-                if hole_area > connected_cell_area*2:
+                if hole_area > hole_size:
                     holes_area += hole_area
                     holes.append(cnts[k])
                 k = hierarchy[0][k][0]
