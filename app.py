@@ -18,6 +18,7 @@ lower_intensity = 0
 upper_intensity = 60
 block_size = 100
 scaling = 3.75
+fluorescence = False
 morph_checkbox = True
 kernel_size = 3
 opening = True
@@ -46,6 +47,8 @@ with st.expander("Parameters", expanded=True):
                                                             value=(lower_intensity, upper_intensity))
         scaling = st.number_input("Scaling Between Pixels and Centimeters", value=3.75)
     with columns[1]:
+
+        fluorescence = st.checkbox("Use Fluorescence?")
 
         image_method = st.selectbox("Processing Method (I recommend using Sobel)",
                                     ("Sobel", "Canny", "Canny Channel", "Block Segmentation", "Histogram"))
@@ -86,7 +89,7 @@ if uploaded_file is not None:
     image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
     normalized, morphed, mask, overlay, count, total_area, avg_area = cellCount.cell_detection(
-        image, lower_intensity, upper_intensity, image_method,
+        image, lower_intensity, upper_intensity, fluorescence, image_method,
         block_size, morph_checkbox, minimum_area, average_cell_area,
         connected_cell_area, scaling, kernel_size, opening, closing,
         eroding, dilating, open_iter, close_iter, erode_iter, dilate_iter

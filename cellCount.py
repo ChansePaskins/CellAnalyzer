@@ -5,11 +5,15 @@ from image_normalization import *
 
 
 def cell_detection(image, lower_intensity, upper_intensity, shadow_toggle,
-                   block_size, morph_filter, minimum_area, average_cell_area,
+                   block_size, fluorescence, morph_filter, minimum_area, average_cell_area,
                    connected_cell_area, scaling, kernel_size, opening, closing,
                    erosion, dilation, iter1, iter2, iter3, iter4):
 
     original = image.copy()
+
+    if fluorescence:
+        original = saturation_channel(original)
+
     if shadow_toggle == "Block Segmentation":
         # shadowing block correction, histogram eq (recommended)
         normalized = shadow_correction(original, block_size)
