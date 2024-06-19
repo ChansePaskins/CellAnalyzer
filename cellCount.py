@@ -4,8 +4,8 @@ import math
 from image_normalization import *
 
 
-def cell_detection(image, lower_intensity, upper_intensity, shadow_toggle,
-                   block_size, fluorescence, morph_filter, minimum_area, average_cell_area,
+def cell_detection(image, lower_intensity, upper_intensity, fluorescence, shadow_toggle,
+                   block_size, morph_filter, minimum_area, average_cell_area,
                    connected_cell_area, scaling, kernel_size, opening, closing,
                    erosion, dilation, iter1, iter2, iter3, iter4):
 
