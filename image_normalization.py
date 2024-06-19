@@ -170,4 +170,4 @@ def saturation_channel(image):
     h, s, v = cv2.split(hsv_image)
     # Return the saturation channel as color
 
-    return s
+    return v

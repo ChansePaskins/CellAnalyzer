@@ -12,7 +12,7 @@ def cell_detection(image, lower_intensity, upper_intensity, fluorescence, shadow
     original = image.copy()
 
     if fluorescence:
-        original = saturation_channel(original)
+        original = cv2.bitwise_not(saturation_channel(original))
 
     if shadow_toggle == "Block Segmentation":
         # shadowing block correction, histogram eq (recommended)
@@ -43,6 +43,8 @@ def cell_detection(image, lower_intensity, upper_intensity, fluorescence, shadow
 
     cells = 0
     cell_areas = []
+    overlay = image.copy()
+    color = (36, 255, 12) if not fluorescence else (0, 100, 255)
 
     # Process contours
     for i, c in enumerate(cnts):
@@ -64,9 +66,9 @@ def cell_detection(image, lower_intensity, upper_intensity, fluorescence, shadow
                 area = area - holes_area
 
             if area > minimum_area:
-                cv2.drawContours(original, [c], -1, (36, 255, 12), 2)  # Draw outer contour in green
+                cv2.drawContours(overlay, [c], -1, color, 2)  # Draw outer contour in green
                 for hole in holes:
-                    cv2.drawContours(original, [hole], -1, (255, 0, 0), 2)  # Draw holes in red
+                    cv2.drawContours(overlay, [hole], -1, (255, 0, 0), 2)  # Draw holes in red
                 if area > connected_cell_area:
                     cells += math.ceil(area / average_cell_area)
                     for _ in range(cells):
@@ -78,7 +80,7 @@ def cell_detection(image, lower_intensity, upper_intensity, fluorescence, shadow
     converted_area_total = int(sum(cell_areas) / scaling ** 2)
     converted_area_mean = round(np.mean(cell_areas) / scaling ** 2, 2) if cell_areas else 0
 
-    return normalized, morphed, mask, original, cells, converted_area_total, converted_area_mean
+    return normalized, morphed, mask, overlay, cells, converted_area_total, converted_area_mean
 
 
 if __name__ == "__main__":

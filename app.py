@@ -62,9 +62,9 @@ with st.expander("Parameters", expanded=True):
             kernel_size = st.slider("Kernel Size (must be odd number)", min_value=1, max_value=11, value=3, step=2)
             cl = st.columns(4)
             with cl[0]:
-                eroding = st.checkbox("Perform Erosion?", value=True)
+                eroding = st.checkbox("Perform Erosion?", value=False)
             with cl[1]:
-                dilating = st.checkbox("Perform Dilation?", value=True)
+                dilating = st.checkbox("Perform Dilation?", value=False)
             with cl[2]:
                 opening = st.checkbox("Perform Opening?", value=True)
             with cl[3]:
@@ -81,8 +81,7 @@ with st.expander("Parameters", expanded=True):
 
 
 if uploaded_file is not None:
-    # Read the image
-    # Read the uploaded file as a byte array
+
     file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
 
     # Decode the byte array to an image
