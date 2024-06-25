@@ -13,8 +13,9 @@ from datetime import datetime
 
 # Page styling and title
 st.set_page_config(layout="wide")
-st.title("Cell Counter and Area Analyzer Pipeline (Not finished)")
-st.write("Once you have found settings that work for your batch, simply upload the folder to process all images")
+st.title("Cell Counter and Area Analyzer Pipeline")
+st.write(
+    "Upload as many files as you need. Run 'Test' to check your settings on the first file. After you find the settings you like, run 'Batch' to iterate through all files.")
 
 # Define default values for parameters
 minimum_area = 150  # lower threshold of area for what is considered a 'cell' (vs debris and noise)
@@ -25,6 +26,7 @@ upper_intensity = 60  # upper brightness threshold used to differentiate between
 block_size = 100  # used for block segmentation method (outdated)
 scaling = 3.75  # scaling between pixels and cm^2
 fluorescence = False  # for when using fluorescence
+image_method = 0
 morph_checkbox = True  # applies selectable morph operations
 kernel_size = 3  # kernel size for morph operations
 opening = True  # useful in removing noise - essentially is erosion followed by dilation
@@ -36,25 +38,61 @@ close_iter = 1  # how many times the close morph is applied
 erode_iter = 1  # how many times the erode morph is applied
 dilate_iter = 1  # how many times the dilate morph is applied
 hole_size = connected_cell_area
+param_bool = True
+
+
+with st.expander("Upload Settings", expanded=False):
+    settings_upload = st.file_uploader("Upload Previous Settings Here", type="csv")
+
+
+if settings_upload:
+    param_bool = False
+    settings_df = pd.read_csv(settings_upload, index_col="Parameter")
+    # Define default values for parameters
+    minimum_area = int(settings_df.loc["Minimum Area", "Value"])
+    average_cell_area = int(settings_df.loc["Average Cell Area", "Value"])
+    connected_cell_area = int(settings_df.loc["Connected Cell Area", "Value"])
+    lower_intensity = int(settings_df.loc["Lower Intensity", "Value"])
+    upper_intensity = int(settings_df.loc["Upper Intensity", "Value"])
+    block_size = int(settings_df.loc["Block Size", "Value"])
+    scaling = float(settings_df.loc["Scaling", "Value"])
+    fluorescence = settings_df.loc["Fluorescence", "Value"]
+    image_method = int(settings_df.loc["Image Method", "Value"])
+    morph_checkbox = settings_df.loc["Morphological Transformations", "Value"]
+    kernel_size = int(settings_df.loc["Kernel Size", "Value"])
+    opening = settings_df.loc["Noise Removal (Open Transform)", "Value"]
+    closing = settings_df.loc["Hole Filling (Close Transform)", "Value"]
+    eroding = settings_df.loc["Border Thinning (Erode Transform)", "Value"]
+    dilating = settings_df.loc["Border Thickening (Dilate Transform)", "Value"]
+    open_iter = int(settings_df.loc["Noise Removal Iterations", "Value"])
+    close_iter = int(settings_df.loc["Hole Sealing Iterations", "Value"])
+    erode_iter = int(settings_df.loc["Border Thinning Iterations", "Value"])
+    dilate_iter = int(settings_df.loc["Border Thickening Iterations", "Value"])
+    hole_size = int(settings_df.loc["Hole Size", "Value"])
+
+# File uploader
+uploaded_files = st.file_uploader("Choose images", type=["jpg", "jpeg", "png", "bmp", "tif"],
+                                  accept_multiple_files=True)
+
+st.divider()
 
 # Create a form for user input
-with st.expander("Parameters", expanded=True):
-    # File uploader
-    uploaded_files = st.file_uploader("Choose images", type=["jpg", "jpeg", "png", "bmp", "tif"], accept_multiple_files=True)
-
-    st.divider()
+with st.expander("Parameters", expanded=param_bool):
 
     # various parameter selections
     with st.container():
         st.subheader("Cell Characteristics")
         columns = st.columns(2)
         with columns[0]:
-            minimum_area = st.slider("Minimum Area to Be Consider Cell (µm\u00b2)", min_value=1, max_value=8000, value=minimum_area, step=2)
-            average_cell_area = st.slider("Average Size of Single Cell (µm\u00b2)", min_value=1, max_value=8000, value=average_cell_area, step=2)
+            minimum_area = st.slider("Minimum Area to Be Consider Cell (µm\u00b2)", min_value=1, max_value=8000,
+                                     value=minimum_area, step=2)
+            average_cell_area = st.slider("Average Size of Single Cell (µm\u00b2)", min_value=1, max_value=8000,
+                                          value=average_cell_area, step=2)
 
         with columns[1]:
             connected_cell_area = st.slider(
-                "Max Size of Cell (µm\u00b2) (for cases where cells are stuck together)", min_value=1, max_value=8000, value=connected_cell_area, step=10)
+                "Max Size of Cell (µm\u00b2) (for cases where cells are stuck together)", min_value=1, max_value=8000,
+                value=connected_cell_area, step=10)
             lower_intensity, upper_intensity = st.select_slider("Intensity Thresholds", options=list(range(101)),
                                                                 value=(lower_intensity, upper_intensity))
             scaling = st.number_input("Scaling Between Pixels and Centimeters", value=0.595)
@@ -65,7 +103,9 @@ with st.expander("Parameters", expanded=True):
     cl = st.columns(2)
     with cl[0]:
         image_method = st.selectbox("Processing Method (I recommend using Sobel, Canny, or Laplace)",
-                                    ("Sobel", "Canny", "Laplace", "Block Segmentation", "Histogram (Not Working)", None))
+                                    (
+                                    "Sobel", "Canny", "Laplace", "Block Segmentation", "Histogram (Not Working)"),
+                                    index=image_method)
 
         col = st.columns(2)
         with col[0]:
@@ -73,7 +113,8 @@ with st.expander("Parameters", expanded=True):
         with col[1]:
             fluorescence = st.checkbox("Use Fluorescence?")
 
-        hole_size = st.slider("Minimum hole size for subtraction (µm\u00b2)", min_value=1, max_value=8000, value=minimum_area, step=2)
+        hole_size = st.slider("Minimum hole size for subtraction (µm\u00b2)", min_value=1, max_value=8000,
+                              value=minimum_area, step=2)
 
         if image_method == "Block Segmentation":
             block_size = st.slider("Block Size", min_value=50, max_value=200, value=block_size, step=10)
@@ -115,7 +156,7 @@ if st.button("Run Test"):
             avg_cell_area_px = average_cell_area * scaling ** 2
             conn_cell_area_px = connected_cell_area * scaling ** 2
             height, width = image.shape[:2]
-            overall_area = (height * width) / scaling**2
+            overall_area = (height * width) / scaling ** 2
 
             # Calls master function to perform all operations using selected parameters
             normalized, morphed, mask, overlay, count, total_area, threshold_area, avg_area = cellCount.cell_detection(
@@ -138,7 +179,7 @@ if st.button("Run Test"):
                 st.metric("Total Cell Area (by threshold)", f"{threshold_area} µm\u00b2")
             with cols[4]:
                 if count > 0:
-                    st.metric("Average Cell Area", f"{round(total_area/count, 2)} µm\u00b2")
+                    st.metric("Average Cell Area", f"{round(total_area / count, 2)} µm\u00b2")
                 else:
                     st.metric("Average Cell Area", f"{0} µm\u00b2")
 
@@ -241,7 +282,7 @@ if st.button("Run Batch"):
             avg_cell_area_px = average_cell_area * scaling ** 2
             conn_cell_area_px = connected_cell_area * scaling ** 2
             height, width = image.shape[:2]
-            overall_area = (height * width) / scaling**2
+            overall_area = (height * width) / scaling ** 2
 
             # Calls master function to perform all operations using selected parameters
             normalized, morphed, mask, overlay, count, total_area, threshold_area, avg_area = cellCount.cell_detection(
@@ -258,13 +299,13 @@ if st.button("Run Batch"):
                 "Total Area of Picture (µm²)": round(overall_area),
                 "Total Cell Area (by contours) (µm²)": total_area,
                 "Total Cell Area (by threshold) (µm²)": threshold_area,
-                "Average Cell Area (µm²)": round(total_area/count, 2) if count > 0 else 0
+                "Average Cell Area (µm²)": round(total_area / count, 2) if count > 0 else 0
             })
 
             # Save overlay image
             images_dict[f"{uploaded_file.name}"] = image
             overlays_dict[f"{uploaded_file.name}"] = overlay
-            morph_dict[f"{uploaded_file.name}"] = morphed
+            morph_dict[f"{uploaded_file.name} morphed.tif"] = morphed
 
         image_cols = st.columns(2)
 
@@ -281,7 +322,35 @@ if st.button("Run Batch"):
         # Create DataFrame and download link
         df = pd.DataFrame(metrics)
         st.write(df)
+
+        # Store selected settings
+        settings = {
+            "Minimum Area": minimum_area,
+            "Average Cell Area": average_cell_area,
+            "Connected Cell Area": connected_cell_area,
+            "Lower Intensity": lower_intensity,
+            "Upper Intensity": upper_intensity,
+            "Block Size": block_size,
+            "Scaling": scaling,
+            "Fluorescence": fluorescence,
+            "Image Method": image_method,
+            "Morphological Transformations": morph_checkbox,
+            "Kernel Size": kernel_size,
+            "Noise Removal (Open Transform)": opening,
+            "Hole Filling (Close Transform)": closing,
+            "Border Thinning (Erode Transform)": eroding,
+            "Border Thickening (Dilate Transform)": dilating,
+            "Noise Removal Iterations": open_iter,
+            "Hole Sealing Iterations": close_iter,
+            "Border Thinning Iterations": erode_iter,
+            "Border Thickening Iterations": dilate_iter,
+            "Hole Size": hole_size
+        }
+        # Create a DataFrame from the settings dictionary
+        settings_df = pd.DataFrame(list(settings.items()), columns=['Parameter', 'Value'])
+
         csv = df.to_csv(index=False).encode('utf-8')
+        settings_csv = settings_df.to_csv(index=False).encode('utf-8')
 
         # Get the current date
         current_date = datetime.now()
@@ -294,13 +363,15 @@ if st.button("Run Batch"):
         zip_bytes = io.BytesIO()
         with zipfile.ZipFile(zip_bytes, 'w') as zf:
             for filename, image_data in overlays_dict.items():
-                img_bytes = cv2.imencode('.png', image_data)[1].tobytes()
+                image_data = cv2.cvtColor(image_data, cv2.COLOR_BGR2RGB)
+                img_bytes = cv2.imencode('.tif', image_data)[1].tobytes()
                 zf.writestr(filename, img_bytes)
             for filename, image_data in morph_dict.items():
-                img_bytes = cv2.imencode('.png', image_data)[1].tobytes()
+                img_bytes = cv2.imencode('.tif', image_data)[1].tobytes()
                 zf.writestr(filename, img_bytes)
             zf.writestr("metrics.csv", csv)
+            zf.writestr("settings.csv", settings_csv)
 
         # Offer zip file for download
-        st.download_button(label="Download Data", data=zip_bytes.getvalue(), file_name=zip_filename, mime='application/zip')
-
+        st.download_button(label="Download Data", data=zip_bytes.getvalue(), file_name=zip_filename,
+                           mime='application/zip')
