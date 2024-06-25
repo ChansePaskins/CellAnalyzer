@@ -7,6 +7,9 @@ from PIL import Image
 import cellCount
 from streamlit_image_comparison import image_comparison
 import os
+import zipfile
+import io
+from datetime import datetime
 
 # Page styling and title
 st.set_page_config(layout="wide")
@@ -141,6 +144,79 @@ if st.button("Run Test"):
 
             st.divider()
 
+            # Displays images
+            cls = st.columns(3)
+            with cls[0]:
+                # Displays original image
+                st.image(image, caption='Original Image', use_column_width=True)
+
+                st.image(mask, caption="Masked Image (Using intensity thresholds defined above)", use_column_width=True)
+
+            with cls[1]:
+                #####################################################################################
+                # Displays original image along with contours for minimum cell area, average cell size, and max cell size
+                copy = image.copy()
+                height, width = copy.shape[:2]
+
+                if width / np.sqrt(minimum_area / np.pi) > 75:
+
+                    # Cropping parameters (to better visualize cell sizing)
+                    x1, y1 = 0, 0  # Top-left corner of the cropped region
+                    x2, y2 = width // 2, height // 2  # Bottom-right corner of the cropped region
+                    cropped = copy[y1:y2, x1:x2]  # Slices image
+
+                    # Resize the cropped image back to the original size
+                    resized = cv2.resize(cropped, (width, height), interpolation=cv2.INTER_LINEAR)
+
+                    # Draw circles representing the areas to scale
+                    cv2.circle(resized, (int(width * 0.25), int(height * 0.5)), int(np.sqrt(minimum_area / np.pi) * 2),
+                               (255, 200, 0),
+                               4)  # Green circle for minimum area
+                    cv2.circle(resized, (int(width * 0.5), int(height * 0.5)),
+                               int(np.sqrt(average_cell_area / np.pi) * 2), (0, 0, 255),
+                               4)  # Blue circle for average cell area
+                    cv2.circle(resized, (int(width * 0.75), int(height * 0.5)),
+                               int(np.sqrt(connected_cell_area / np.pi) * 2), (255, 0, 0),
+                               4)  # Red circle for connected cell area
+                    st.image(resized, use_column_width=True)
+                    st.caption(
+                        'Original Image with :orange[minimum area], :blue[average area], and :red[max cell size] displayed for reference')
+
+                else:
+                    # Draw circles representing the areas to scale
+                    cv2.circle(copy, (int(width * 0.25), int(height * 0.5)), int(np.sqrt(minimum_area / np.pi)),
+                               (255, 200, 0),
+                               4)  # Green circle for minimum area
+                    cv2.circle(copy, (int(width * 0.5), int(height * 0.5)), int(np.sqrt(average_cell_area / np.pi)),
+                               (0, 0, 255),
+                               4)  # Blue circle for average cell area
+                    cv2.circle(copy, (int(width * 0.75), int(height * 0.5)), int(np.sqrt(connected_cell_area / np.pi)),
+                               (255, 0, 0),
+                               4)  # Red circle for connected cell area
+                    st.image(copy, use_column_width=True)
+                    st.caption(
+                        'Original Image with :green[minimum area], :blue[average area], and :red[max cell size] displayed for reference')
+                ####################################################################################
+
+                # Displays image after morphological operations
+                if morph_checkbox:
+                    st.image(morphed, caption='Morphed Image (fills in holes and borders)', use_column_width=True)
+                else:
+                    st.info("Morph Options Unselected")
+                #######################################################################################
+
+            with cls[2]:
+                # Displays image after edge detection processing
+                st.image(normalized, caption='Processed Image (Image made from edge detection algorithm)',
+                         use_column_width=True)
+
+                # Displays original image with calculated contours overlayed
+                st.image(overlay,
+                         caption='Overlayed Image (green is area counted, red (if there is any) are detected holes)',
+                         use_column_width=True)
+
+            st.divider()
+
             # Image comparison slider
             with st.container():
                 st.write("Slide to compare")
@@ -150,6 +226,9 @@ if st.button("Run Test"):
 if st.button("Run Batch"):
     if uploaded_files:
         metrics = []
+        images_dict = {}
+        overlays_dict = {}
+        morph_dict = {}
 
         for uploaded_file in uploaded_files:
             # turns the image file into an array that OpenCV can understand and decode
@@ -183,45 +262,45 @@ if st.button("Run Batch"):
             })
 
             # Save overlay image
-            output_dir = "output_images"
-            if not os.path.exists(output_dir):
-                os.makedirs(output_dir)
-            overlay_image_path = os.path.join(output_dir, f"{uploaded_file.name}_overlay.png")
-            cv2.imwrite(overlay_image_path, overlay)
+            images_dict[f"{uploaded_file.name}"] = image
+            overlays_dict[f"{uploaded_file.name}"] = overlay
+            morph_dict[f"{uploaded_file.name}"] = morphed
 
-            # Display images
-            st.divider()
-            cls = st.columns(3)
-            with cls[0]:
-                st.image(image, caption='Original Image', use_column_width=True)
-                st.image(mask, caption="Masked Image", use_column_width=True)
+        image_cols = st.columns(2)
 
-            with cls[1]:
-                copy = image.copy()
-                height, width = copy.shape[:2]
-                cv2.circle(copy, (int(width * 0.25), int(height * 0.5)), int(np.sqrt(min_area_px / np.pi)), (255, 200, 0), 4)
-                cv2.circle(copy, (int(width * 0.5), int(height * 0.5)), int(np.sqrt(avg_cell_area_px / np.pi)), (0, 0, 255), 4)
-                cv2.circle(copy, (int(width * 0.75), int(height * 0.5)), int(np.sqrt(conn_cell_area_px / np.pi)), (255, 0, 0), 4)
-                st.image(copy, use_column_width=True)
-                st.caption('Original Image with :green[minimum area], :blue[average area], and :red[max cell size] displayed for reference')
-                if morph_checkbox:
-                    st.image(morphed, caption='Morphed Image', use_column_width=True)
-                else:
-                    st.info("Morph Options Unselected")
+        with image_cols[0]:
+            for item in images_dict:
+                st.caption(f"{item}")
+                image_comparison(images_dict[item], overlays_dict[item], width=500)
 
-            with cls[2]:
-                st.image(normalized, caption='Processed Image', use_column_width=True)
-                st.image(overlay, caption='Overlayed Image', use_column_width=True)
-
-            st.divider()
-            st.write("Slide to compare")
-            image_comparison(image, overlay)
+        with image_cols[1]:
+            for item in morph_dict:
+                st.caption(f"{item}")
+                st.image(morph_dict[item], width=500)
 
         # Create DataFrame and download link
         df = pd.DataFrame(metrics)
         st.write(df)
-
         csv = df.to_csv(index=False).encode('utf-8')
-        st.download_button("Download Metrics as CSV", data=csv, file_name='metrics.csv', mime='text/csv')
 
-        st.write("Overlay images are saved in the output_images directory.")
+        # Get the current date
+        current_date = datetime.now()
+        # Format the current date as "06June2024"
+        formatted_date = current_date.strftime("%d%b%Y")
+        # Use the formatted date in a filename
+        zip_filename = f"Batch {formatted_date}.zip"  # Example filename
+
+        # Create a zip file containing all images
+        zip_bytes = io.BytesIO()
+        with zipfile.ZipFile(zip_bytes, 'w') as zf:
+            for filename, image_data in overlays_dict.items():
+                img_bytes = cv2.imencode('.png', image_data)[1].tobytes()
+                zf.writestr(filename, img_bytes)
+            for filename, image_data in morph_dict.items():
+                img_bytes = cv2.imencode('.png', image_data)[1].tobytes()
+                zf.writestr(filename, img_bytes)
+            zf.writestr("metrics.csv", csv)
+
+        # Offer zip file for download
+        st.download_button(label="Download Data", data=zip_bytes.getvalue(), file_name=zip_filename, mime='application/zip')
+
