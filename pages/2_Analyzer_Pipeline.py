@@ -314,7 +314,7 @@ if st.button("Run Batch"):
         with image_cols[1]:
             for item in morph_dict:
                 st.caption(f"{item}")
-                st.image(morph_dict[item], width=475)
+                st.image(morph_dict[item], width=480)
 
         # Create DataFrame and download link
         df = pd.DataFrame(metrics)
