@@ -27,7 +27,7 @@ if file_path:
     # Add a button to download the PDF
     with open(file_path, "rb") as file:
         btn = st.download_button(
-            label="Download PDF",
+            label="Download Standard Operating Procedure",
             data=file,
             file_name="Cell_Analysis_Website_SOP.pdf",
             mime="application/pdf"
