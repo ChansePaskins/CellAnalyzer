@@ -50,12 +50,12 @@ with st.expander("Parameters", expanded=True):
         st.subheader("Cell Characteristics")
         columns = st.columns(2)
         with columns[0]:
-            minimum_area = st.slider("Minimum Area to Be Consider Cell (µm\u00b2)", min_value=1, max_value=8000, value=minimum_area, step=2)
-            average_cell_area = st.slider("Average Size of Single Cell (µm\u00b2)", min_value=1, max_value=8000, value=average_cell_area, step=2)
+            minimum_area = st.number_input("Minimum Area to Be Consider Cell (µm\u00b2)", value=minimum_area)
+            average_cell_area = st.number_input("Average Size of Single Cell (µm\u00b2)", value=average_cell_area)
 
         with columns[1]:
-            connected_cell_area = st.slider(
-                "Max Size of Cell (µm\u00b2) (for cases where cells are stuck together)", min_value=1, max_value=8000, value=connected_cell_area, step=10)
+            connected_cell_area = st.number_input(
+                "Max Size of Cell (µm\u00b2) (for cases where cells are stuck together)",value=connected_cell_area)
             lower_intensity, upper_intensity = st.select_slider("Intensity Thresholds", options=list(range(101)),
                                                                 value=(lower_intensity, upper_intensity))
             scaling = st.number_input("Scaling Between Pixels and Micrometers", value=0.595)
