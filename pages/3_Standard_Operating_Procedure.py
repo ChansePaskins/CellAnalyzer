@@ -6,7 +6,7 @@ from get_requests import read_docx_from_github
 st.set_page_config(layout="wide")
 st.title("Cell Counter and Area Analyzer Pipeline")
 
-url = "https://raw.githubusercontent.com/your_username/your_repo/main/sop.docx"
+url = "https://github.com/ChansePaskins/CellAnalyzer/blob/main/Cell%20Analysis%20Website%20SOP.docx"
 doc = read_docx_from_github(url)
 
 for para in doc.paragraphs:
