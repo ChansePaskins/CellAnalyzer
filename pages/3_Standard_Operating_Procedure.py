@@ -25,4 +25,3 @@ file_path = fetch_pdf_from_github(url)
 if file_path:
     # Display the PDF using streamlit-pdf-viewer
     pdf_viewer(file_path)
-    
