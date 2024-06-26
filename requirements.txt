@@ -4,3 +4,4 @@ matplotlib
 streamlit_image_comparison
 pandas
 PyMuPDF
+streamlit_pdf_viewer

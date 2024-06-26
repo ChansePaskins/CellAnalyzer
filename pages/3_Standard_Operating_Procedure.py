@@ -1,26 +1,28 @@
 import streamlit as st
-from get_requests import read_pdf_from_github
-import fitz
+import requests
+from streamlit_pdf_viewer import pdf_viewer
 
-# Page styling and title
 st.set_page_config(layout="wide")
-st.title("Cell Counter and Area Analyzer Pipeline")
+st.title("Standard Operating Procedure")
 
 
-def display_pdf(file_path):
-    doc = fitz.open(file_path)
-    for page_num in range(len(doc)):
-        page = doc.load_page(page_num)
-        text = page.get_text("text")
-        st.write(text)
-        images = page.get_images(full=True)
-        for img_index, img in enumerate(images):
-            xref = img[0]
-            base_image = doc.extract_image(xref)
-            image_bytes = base_image["image"]
-            st.image(image_bytes)
+def fetch_pdf_from_github(url):
+    response = requests.get(url)
+    if response.status_code == 200:
+        temp_file_path = "temp_sop.pdf"
+        with open(temp_file_path, "wb") as file:
+            file.write(response.content)
+        return temp_file_path
+    else:
+        st.error("Failed to fetch the document.")
+        return None
 
 
 url = "https://github.com/ChansePaskins/CellAnalyzer/raw/main/Cell%20Analysis%20Website%20SOP.pdf"
-doc = read_pdf_from_github(url)
-display_pdf(doc)
+
+# Fetch the PDF file from GitHub
+file_path = fetch_pdf_from_github(url)
+if file_path:
+    # Display the PDF using streamlit-pdf-viewer
+    pdf_viewer(file_path)
+    
