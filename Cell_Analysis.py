@@ -58,7 +58,7 @@ with st.expander("Parameters", expanded=True):
                 "Max Size of Cell (µm\u00b2) (for cases where cells are stuck together)", min_value=1, max_value=8000, value=connected_cell_area, step=10)
             lower_intensity, upper_intensity = st.select_slider("Intensity Thresholds", options=list(range(101)),
                                                                 value=(lower_intensity, upper_intensity))
-            scaling = st.number_input("Scaling Between Pixels and Centimeters", value=0.595)
+            scaling = st.number_input("Scaling Between Pixels and Micrometers", value=0.595)
 
         st.divider()
 

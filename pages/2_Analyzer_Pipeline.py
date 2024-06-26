@@ -95,7 +95,7 @@ with st.expander("Parameters", expanded=param_bool):
                 value=connected_cell_area, step=10)
             lower_intensity, upper_intensity = st.select_slider("Intensity Thresholds", options=list(range(101)),
                                                                 value=(lower_intensity, upper_intensity))
-            scaling = st.number_input("Scaling Between Pixels and Centimeters", value=0.595)
+            scaling = st.number_input("Scaling Between Pixels and Micrometers", value=0.595)
 
         st.divider()
 
