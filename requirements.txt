@@ -3,4 +3,4 @@ pillow
 matplotlib
 streamlit_image_comparison
 pandas
-docx
+python-docx
