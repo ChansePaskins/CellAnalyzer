@@ -72,6 +72,18 @@ def apply_canny_filter(image):
 
     return dilated_edges
 
+def apply_laplace_filter(src):
+
+    # Remove noise by blurring with a Gaussian filter
+    src = cv2.GaussianBlur(src, (3, 3), 0)
+
+    # Apply Laplace function
+    dst = cv2.Laplacian(src, cv2.CV_16S, ksize=5)
+
+    # converting back to uint8
+    abs_dst = cv2.convertScaleAbs(dst)
+
+    return abs_dst
 
 # Adjusts edge brightness based on average values
 def histogram_equalization(image):
@@ -170,20 +182,3 @@ def xyz_channel(image):
     #cv2.waitKey()
 
     return L
-
-
-def apply_laplace_filter(src):
-
-    # Remove noise by blurring with a Gaussian filter
-    src = cv2.GaussianBlur(src, (3, 3), 0)
-
-    # Convert the image to grayscale
-    src_gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
-
-    # Apply Laplace function
-    dst = cv2.Laplacian(src_gray, cv2.CV_16S, ksize=5)
-
-    # converting back to uint8
-    abs_dst = cv2.convertScaleAbs(dst)
-
-    return abs_dst

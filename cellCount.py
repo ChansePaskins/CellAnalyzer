@@ -1,53 +1,69 @@
 import cv2
 import numpy as np
 import math
-from image_normalization import *
+from image_processing import *
 
 
 # Master function
-def cell_detection(image, lower_intensity, upper_intensity, fluorescence, shadow_toggle,
-                   block_size, hole_size, morph_filter, minimum_area, average_cell_area,
-                   connected_cell_area, scaling, kernel_size, opening, closing,
-                   erosion, dilation, iter1, iter2, iter3, iter4):
+def cell_detection(image, **kwargs):
+
+    lower_intensity = kwargs['lower_intensity']
+    upper_intensity = kwargs['upper_intensity']
+    fluorescence = kwargs['fluorescence']
+    image_method = kwargs['image_method']
+    block_size = kwargs['block_size']
+    hole_size = kwargs['hole_size']
+    morph_filter = kwargs['morph_checkbox']
+    minimum_area = kwargs['minimum_area']
+    average_cell_area = kwargs['average_cell_area']
+    connected_cell_area = kwargs['connected_cell_area']
+    scaling = kwargs['scaling']
+    kernel_size = kwargs['kernel_size']
+    opening = kwargs['opening']
+    closing = kwargs['closing']
+    erosion = kwargs['eroding']
+    dilation = kwargs['dilating']
+    iter1 = kwargs['open_iter']
+    iter2 = kwargs['close_iter']
+    iter3 = kwargs['erode_iter']
+    iter4 = kwargs['dilate_iter']
 
     # copies image to prevent from overwriting
     original = image.copy()
-
     # fluorescent images invert normal coloring. In brightfield, cells are dark. Under fluorescence, cells are bright
     if fluorescence:
         # converts to grayscale and inverts image
         original = cv2.bitwise_not(xyz_channel(original))
-
     # Uses Sobel edge detection algorithm to better define cell edges
-    if shadow_toggle == "Sobel":
-        normalized = cv2.bitwise_not(apply_sobel_filter(original))
+    if image_method == "Sobel":
+        processed = cv2.bitwise_not(apply_sobel_filter(original))
 
     # Uses Canny edge detection algorithm to better define cell edges.
     # Very similar to Sobel, but includes Non-maxima suppression and more intricate edge tracking
-    elif shadow_toggle == 'Canny':
-        normalized = cv2.bitwise_not(apply_canny_filter(original))
+    elif image_method == 'Canny':
+        processed = cv2.bitwise_not(apply_canny_filter(original))
 
     # Similar to both Sobel and Canny
-    elif shadow_toggle == 'Laplace':
-        normalized = cv2.bitwise_not(apply_laplace_filter(original))
+    elif image_method == 'Laplace':
+        processed = cv2.bitwise_not(apply_laplace_filter(original))
 
-    # For cases of extreme shadowing. This breaks the image into several blocks and normalized brightness. Old method.
-    elif shadow_toggle == "Block Segmentation":
+    # For cases of extreme shadowing. This breaks the image into several blocks and processed brightness. Old method.
+    elif image_method == "Block Segmentation":
         # fixes shadowing and applies histogram
-        normalized = shadow_correction(original, block_size)
+        processed = shadow_correction(original, block_size)
 
     # Skips block shadow correction and just applies histogram. Old method
-    elif shadow_toggle == "Histogram":
+    elif image_method == "Histogram":
         # perform histogram eq and corner brightness adjustment (not great)
-        normalized = histogram_equalization(original)
+        processed = histogram_equalization(original)
 
     # Skips all processing methods
     else:
-        normalized = original.copy()
+        processed = original.copy()
 
     # This creates a new image based on the lower/upper thresholds defined by the user
     # This is pretty much just defining how bright/dark the cells are
-    mask = cv2.inRange(normalized.copy(), lower_intensity, upper_intensity)
+    mask = cv2.inRange(processed.copy(), lower_intensity, upper_intensity)
 
     # Applies morphological functions based on user input
     if morph_filter:
@@ -60,10 +76,9 @@ def cell_detection(image, lower_intensity, upper_intensity, fluorescence, shadow
     threshold_area = cv2.countNonZero(morphed)
 
     # Finds contours as well as parent/child associations
-    # This isn't working great right now, but the goal is to determine the difference between clumps of cells
-    # and the holes within them. Think of it like a donut. We want to subtract the area of a donut hole from the parent
-    # donut. In practice, this is more trivial. Holes appear in red when found
-    # Finds contours and hierarchy
+    # The goal is to determine the difference between clumps of cells and the holes within them.
+    # Think of it like a donut. We want to subtract the area of a donut hole from the parent donut.
+    # In practice, this is more trivial. Holes appear in red when found.
     cnts, hierarchy = cv2.findContours(morphed, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
 
     # Initializes variables for overlaying contours and counting cells/cell areas
@@ -89,7 +104,7 @@ def cell_detection(image, lower_intensity, upper_intensity, fluorescence, shadow
                     holes.append(cnts[k])
                 k = hierarchy[0][k][0]
 
-            # Subtract the total hole area from the outer contour area (not working well)
+            # Subtract the total hole area from the outer contour area
             area = area - holes_area
 
             # Only counts the contour if it is bigger than the minimum area described
@@ -114,5 +129,5 @@ def cell_detection(image, lower_intensity, upper_intensity, fluorescence, shadow
     converted_area_mean = round(np.mean(cell_areas) / scaling ** 2, 2) if cell_areas else 0
     converted_threshold_area = int(threshold_area / scaling ** 2)
 
-    return normalized, morphed, mask, overlay, cells, converted_area_total, converted_threshold_area, converted_area_mean
+    return processed, morphed, mask, overlay, cells, converted_area_total, converted_threshold_area, converted_area_mean
 
