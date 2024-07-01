@@ -149,37 +149,37 @@ if st.button("Run Batch"):
         overlays_dict = {}
         morph_dict = {}
         process_dict = {}
+        with st.spinner("Running Batch..."):
+            for uploaded_file in uploaded_files:
+                # turns the image file into an array that OpenCV can understand and decode
+                file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
+                # Decode the byte array to an image
+                image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
-        for uploaded_file in uploaded_files:
-            # turns the image file into an array that OpenCV can understand and decode
-            file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-            # Decode the byte array to an image
-            image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+                params['minimum_area'] = params['minimum_area'] * params['scaling'] ** 2
+                params['average_cell_area'] = params['average_cell_area'] * params['scaling'] ** 2
+                params['connected_cell_area'] = params['connected_cell_area'] * params['scaling'] ** 2
+                height, width = image.shape[:2]
+                overall_area = (height * width) / params['scaling'] ** 2
 
-            params['minimum_area'] = params['minimum_area'] * params['scaling'] ** 2
-            params['average_cell_area'] = params['average_cell_area'] * params['scaling'] ** 2
-            params['connected_cell_area'] = params['connected_cell_area'] * params['scaling'] ** 2
-            height, width = image.shape[:2]
-            overall_area = (height * width) / params['scaling'] ** 2
+                normalized, morphed, mask, overlay, count, total_area, threshold_area, avg_area = cellCount.cell_detection(
+                    image, **params)
 
-            normalized, morphed, mask, overlay, count, total_area, threshold_area, avg_area = cellCount.cell_detection(
-                image, **params)
+                # Store metrics
+                metrics.append({
+                    "Filename": uploaded_file.name,
+                    "Total Cell Count": count,
+                    "Total Area of Picture (µm²)": round(overall_area),
+                    "Total Cell Area (by contours) (µm²)": total_area,
+                    "Total Cell Area (by threshold) (µm²)": threshold_area,
+                    "Average Cell Area (µm²)": round(total_area / count, 2) if count > 0 else 0
+                })
 
-            # Store metrics
-            metrics.append({
-                "Filename": uploaded_file.name,
-                "Total Cell Count": count,
-                "Total Area of Picture (µm²)": round(overall_area),
-                "Total Cell Area (by contours) (µm²)": total_area,
-                "Total Cell Area (by threshold) (µm²)": threshold_area,
-                "Average Cell Area (µm²)": round(total_area / count, 2) if count > 0 else 0
-            })
-
-            # Save overlay image
-            images_dict[f"{uploaded_file.name}"] = image
-            overlays_dict[f"{uploaded_file.name}"] = overlay
-            morph_dict[f"{uploaded_file.name} morphed.tif"] = morphed
-            process_dict[f"{uploaded_file.name} process.tif"] = normalized
+                # Save overlay image
+                images_dict[f"{uploaded_file.name}"] = image
+                overlays_dict[f"{uploaded_file.name}"] = overlay
+                morph_dict[f"{uploaded_file.name} morphed.tif"] = morphed
+                process_dict[f"{uploaded_file.name} process.tif"] = normalized
 
         image_cols = st.columns(2)
 
