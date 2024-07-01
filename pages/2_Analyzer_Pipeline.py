@@ -148,6 +148,7 @@ if st.button("Run Batch"):
         images_dict = {}
         overlays_dict = {}
         morph_dict = {}
+        process_dict = {}
 
         for uploaded_file in uploaded_files:
             # turns the image file into an array that OpenCV can understand and decode
@@ -178,6 +179,7 @@ if st.button("Run Batch"):
             images_dict[f"{uploaded_file.name}"] = image
             overlays_dict[f"{uploaded_file.name}"] = overlay
             morph_dict[f"{uploaded_file.name} morphed.tif"] = morphed
+            process_dict[f"{uploaded_file.name} process.tif"] = normalized
 
         image_cols = st.columns(2)
 
@@ -239,6 +241,9 @@ if st.button("Run Batch"):
                 img_bytes = cv2.imencode('.tif', image_data)[1].tobytes()
                 zf.writestr(filename, img_bytes)
             for filename, image_data in morph_dict.items():
+                img_bytes = cv2.imencode('.tif', image_data)[1].tobytes()
+                zf.writestr(filename, img_bytes)
+            for filename, image_data in process_dict.items():
                 img_bytes = cv2.imencode('.tif', image_data)[1].tobytes()
                 zf.writestr(filename, img_bytes)
             zf.writestr("metrics.csv", csv)

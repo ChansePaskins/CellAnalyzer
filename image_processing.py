@@ -64,7 +64,7 @@ def apply_canny_filter(image):
     blurred_image = cv2.GaussianBlur(image, (5, 5), 1.4)
 
     # Apply Canny edge detection
-    edges = cv2.Canny(blurred_image, 0, 100)
+    edges = cv2.Canny(blurred_image, 0, 60)
 
     # Apply dilation to close gaps in edges
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
