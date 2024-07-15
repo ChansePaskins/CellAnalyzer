@@ -1,7 +1,11 @@
 opencv-python-headless
 pillow
-matplotlib
 streamlit_image_comparison
 pandas
 PyMuPDF
 streamlit_pdf_viewer
+tensorflow
+scikit-learn
+plotly-express
+scipy
+scikit-image
