@@ -81,6 +81,7 @@ def cell_detection(image, **kwargs):
     # Calculate the threshold area (number of non-zero pixels)
     threshold_area = cv2.countNonZero(morphed)
 
+
     # Detect contours and analyze cell areas and intensities
     overlay, cells, cell_areas, average_intensities = cv2_contours(original, gray, morphed, **kwargs)
 

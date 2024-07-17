@@ -19,7 +19,7 @@ def parameters():
         'minimum_area': 800,
         'average_cell_area': 1000,
         'connected_cell_area': 2000,
-        'lower_intensity': 0,
+        'lower_intensity': 100,
         'upper_intensity': 255,
         'block_size': 100,
         'scaling': 0.59,

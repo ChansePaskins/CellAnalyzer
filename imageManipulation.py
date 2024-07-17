@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import plotly.express as px
 
+
 def morphological_effects(image, opening, closing, erosion, dilation, iter1, iter2, iter3, iter4, kernel_size):
     """
     Apply morphological operations to the input image.
@@ -44,6 +45,7 @@ def morphological_effects(image, opening, closing, erosion, dilation, iter1, ite
         result = cv2.morphologyEx(result, cv2.MORPH_CLOSE, kernel, iterations=iter2)
 
     return result
+
 
 def histogram_equalization(image):
     """

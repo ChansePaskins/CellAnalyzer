@@ -1,7 +1,8 @@
-from skimage import measure
+from skimage import io, color, measure, filters, morphology
 import cv2
 import numpy as np
 import math
+import matplotlib.pyplot as plt
 
 
 def cv2_contours(original, gray, morphed, **kwargs):
@@ -234,32 +235,6 @@ def blobber(original, gray, morphed, min_threshold=100, max_threshold=255, min_a
                 average_intensities.append(mean_intensity)
 
     return overlay, cells, cell_areas, average_intensities
-
-
-def watershed_segmentation(image, morphed):
-    """
-    Applies the watershed algorithm for segmenting overlapping or confluent cells.
-
-    Args:
-        image (numpy.ndarray): The binary image to be segmented.
-
-    Returns:
-        numpy.ndarray: The markers for the watershed algorithm.
-    """
-    # Perform distance transform
-    dist_transform = cv2.distanceTransform(morphed, cv2.DIST_L2, 5)
-    _, dist_transform_thresh = cv2.threshold(dist_transform, 0.7 * dist_transform.max(), 255, 0)
-    dist_transform_thresh = np.uint8(dist_transform_thresh)
-
-    # Find markers
-    ret, markers = cv2.connectedComponents(dist_transform_thresh)
-    markers = markers + 1  # Add one to all markers
-
-    # Perform watershed
-    markers = cv2.watershed(image, markers)
-    image[markers == -1] = [0, 0, 255]  # Mark boundaries in red
-
-    return image
 
 
 
