@@ -9,3 +9,4 @@ scikit-learn
 plotly-express
 scipy
 scikit-image
+matplotlib
