@@ -20,6 +20,7 @@ def adaptive_threshold(image, lower_thresh, upper_thresh):
 
     return mask
 
+
 def otsu_threshold(image, lower_thresh, upper_thresh):
     """
     Apply Otsu's thresholding to the input image.
@@ -39,13 +40,14 @@ def otsu_threshold(image, lower_thresh, upper_thresh):
 
     return mask
 
+
 def global_threshold(image, lower_thresh, upper_thresh):
     """
     Apply global thresholding to the input image.
 
     Args:
         image (numpy.ndarray): Input grayscale image.
-        lower_thresh (int): Lower threshold value (unused in this function).
+        lower_thresh (int): Lower threshold value.
         upper_thresh (int): Upper threshold value for binary thresholding (unused in this function).
 
     Returns:

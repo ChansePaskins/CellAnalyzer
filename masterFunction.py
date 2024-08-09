@@ -63,9 +63,9 @@ def cell_detection(image, **kwargs):
     elif image_method == "Histogram":
         processed = histogram_equalization(original)
     else:
-        processed = gray.copy()
+        processed = cv2.bitwise_not(gray.copy())
 
-    # Apply Otsu's thresholding to create a binary mask
+    # Apply Otsu's or global thresholding to create a binary mask
     mask = global_threshold(processed, lower_intensity, upper_intensity)
 
     # Apply morphological operations if enabled
@@ -84,6 +84,7 @@ def cell_detection(image, **kwargs):
 
     # Detect contours and analyze cell areas and intensities
     overlay, cells, cell_areas, average_intensities = cv2_contours(original, gray, morphed, **kwargs)
+
 
     # Convert pixel area to real-world area using the scaling factor
     converted_area_total = int(sum(cell_areas) / scaling ** 2)

@@ -44,16 +44,13 @@ if uploaded_file is not None:
     with cols[0]:
         st.metric("Total Cell Count", count)
     with cols[1]:
-        st.metric("Total Area of Picture", f"{round(overall_area)} µm\u00b2")
-    with cols[2]:
         st.metric("Total Cell Area (by contours)", f"{total_area} µm\u00b2")
-    with cols[3]:
+    with cols[2]:
         st.metric("Total Cell Area (by threshold)", f"{threshold_area} µm\u00b2")
+    with cols[3]:
+        st.metric("Percent Area of Image (by contours)", f"{round(100 * (total_area / overall_area), 2)}%")
     with cols[4]:
-        if count > 0:
-            st.metric("Average Cell Area", f"{round(total_area / count, 2)} µm\u00b2")
-        else:
-            st.metric("Average Cell Area", f"{0} µm\u00b2")
+        st.metric("Percent Area of Image (by threshold)", f"{round(100 * (threshold_area / overall_area), 2)}%")
 
     # Display images and visual references
     st.divider()

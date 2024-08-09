@@ -237,6 +237,50 @@ def blobber(original, gray, morphed, min_threshold=100, max_threshold=255, min_a
     return overlay, cells, cell_areas, average_intensities
 
 
+def watershed_segmentation(image, morphed):
+    """
+    Applies the watershed algorithm for segmenting overlapping or confluent cells.
+
+    Args:
+        image (numpy.ndarray): The binary image to be segmented.
+        morphed (numpy.ndarray): The morphed binary image used for preprocessing.
+
+    Returns:
+        image (numpy.ndarray): New segmented image
+    """
+    image = image.copy()
+
+    # Perform morphological operations to remove small noises and fill gaps
+    kernel = np.ones((3, 3), np.uint8)
+    sure_bg = cv2.dilate(morphed, kernel, iterations=4)
+    dist_transform = cv2.distanceTransform(morphed, cv2.DIST_L2, 3)
+    _, sure_fg = cv2.threshold(dist_transform, 0.1 * dist_transform.max(), 255, 0)
+    sure_fg = np.uint8(sure_fg)
+
+    unknown = cv2.subtract(sure_bg, sure_fg)
+
+    # Marker labelling
+    _, markers = cv2.connectedComponents(sure_fg)
+
+    # Add 1 to all the markers to distinguish sure regions
+    markers = markers + 1
+
+    # Mark the unknown regions with zero
+    markers[unknown == 255] = 0
+
+    # Apply the watershed algorithm
+    markers = cv2.watershed(image, markers)
+    image[markers == -1] = [255, 0, 0]  # Mark the boundaries in red
+
+    # Convert markers to uint8 type
+    segmented_image = np.uint8(markers)
+
+
+    #segmented_image = cv2.bitwise_not(segmented_image)
+
+    return segmented_image
+
+
 
 def hough(image):
     """

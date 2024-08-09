@@ -59,16 +59,13 @@ if st.button("Run Test"):
             with cols[0]:
                 st.metric("Total Cell Count", count)
             with cols[1]:
-                st.metric("Total Area of Picture", f"{round(overall_area)} µm\u00b2")
-            with cols[2]:
                 st.metric("Total Cell Area (by contours)", f"{total_area} µm\u00b2")
-            with cols[3]:
+            with cols[2]:
                 st.metric("Total Cell Area (by threshold)", f"{threshold_area} µm\u00b2")
+            with cols[3]:
+                st.metric("Percent Area of Image (by contours)", f"{round(100 * (total_area / overall_area), 2)}%")
             with cols[4]:
-                if count > 0:
-                    st.metric("Average Cell Area", f"{round(total_area / count, 2)} µm\u00b2")
-                else:
-                    st.metric("Average Cell Area", f"{0} µm\u00b2")
+                st.metric("Percent Area of Image (by threshold)", f"{round(100 * (threshold_area / overall_area), 2)}%")
 
             st.divider()
 
@@ -195,7 +192,9 @@ if st.button("Run Batch"):
                     "Total Area of Picture (µm²)": round(overall_area),
                     "Total Cell Area (by contours) (µm²)": total_area,
                     "Total Cell Area (by threshold) (µm²)": threshold_area,
-                    "Average Cell Area (µm²)": round(total_area / count, 2) if count > 0 else 0,
+                    "Percent Area of Image (by contours)": total_area / overall_area,
+                    "Percent Area of Image (by threshold)": threshold_area / overall_area
+
                 })
 
                 # Store images for each processing step

@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import plotly.express as px
-
+from skimage import io, color, measure, filters, morphology
 
 def morphological_effects(image, opening, closing, erosion, dilation, iter1, iter2, iter3, iter4, kernel_size):
     """
