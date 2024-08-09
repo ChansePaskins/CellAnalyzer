@@ -1,2 +1,46 @@
-C:\Users\chans\PycharmProjects\CMV\venv\Scripts\activate.bat
-streamlit run C:\Users\chans\Documents\GitHub\CellAnalyzer\Cell_Analysis.py
+Purpose
+This application is designed to provide a modern, user-friendly alternative to traditional scientific image analysis tools like ImageJ. It allows researchers to transform raw cell images into quantitative data using advanced algorithms and a more intuitive interface.
+
+Why Build This?
+ImageJ is widely used in the scientific community but has limitations, including its reliance on older algorithms and a dated, unintuitive user interface. This application addresses these shortcomings by integrating modern image processing techniques and providing a streamlined, accessible user experience.
+
+Features
+1. Cell Counting
+Method: Utilizes OpenCV’s findContours() function to detect cell boundaries.
+Output: Counts the number of cells by detecting contours. For clumped cells, the application estimates the cell count by dividing the contour area by the average cell size.
+2. Cell Area (by Contours)
+Method: Calculates the total area of all detected contours.
+Output: Provides the total cell area based on contour detection.
+3. Cell Area (by Threshold)
+Method: Uses pixel intensity thresholds to calculate cell area, similar to ImageJ’s approach.
+Output: Returns the cell area by summing pixels within the specified threshold range.
+4. Image Processing & Transformations
+Methods: Includes advanced edge detection algorithms like Sobel, Canny, and Laplace, commonly used in computer vision applications such as self-driving cars and motion tracking.
+Output: Pre-processes images to enhance features and improve analysis accuracy.
+Installation Instructions
+Prerequisites
+Python 3.8+
+Pip (Python package installer)
+Installation Steps
+Clone the Repository:
+
+git clone https://github.com/username/cell-analysis-app.git
+cd cell-analysis-app
+Create a Virtual Environment (Optional but recommended):
+
+python -m venv venv
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+Install Dependencies:
+
+pip install -r requirements.txt
+Run the Application:
+
+python cell_analysis.py
+Explore Additional Settings:
+Fine-tune the analysis settings to suit your specific image conditions.
+
+Contribution Guidelines
+We welcome contributions to enhance the functionality and usability of this application. Please submit pull requests with detailed descriptions of the changes.
+
+License
+This project is licensed under the MIT License.
